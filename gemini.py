@@ -1,5 +1,7 @@
+import json
 import os
 import google.generativeai as genai
+
 
 # Configure the Google API key for gemini
 GOOGLE_API_KEY=os.environ.get('GOOGLE_API_KEY')
@@ -10,7 +12,7 @@ async def get_ai_suggestions(user_data):
     
     try:
         model = genai.GenerativeModel('models/gemini-1.5-flash')
-        response = await model.generate_content(user_data)
+        response = model.generate_content(user_data)
         print(response)
         return response.text
     except Exception as e:
@@ -22,9 +24,9 @@ async def get_ai_suggestions(user_data):
 async def summarize_text(text):
     try:
         model = genai.GenerativeModel('models/gemini-1.5-flash')
-        response = await model.summarize_content(text)
+        response = model.generate_content(text)
         print(response)
-        return response.summary
+        return response.text
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return "Internal Server Error"
@@ -32,14 +34,35 @@ async def summarize_text(text):
 # Function to sort events using Gemini API
 async def sort_events(events):
     try:
-        # Prepare the prompt for the generative AI model
-        prompt = f"Sort the following events into current, upcoming, and completed based on their dates:\n{events}"
 
-        # Initialize the generative model
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        # Define the JSON schema for the event details
+        event_schema = {
+            "title": "string",
+            "location": "string",
+            "description": "string",
+            "start_time": "datetime",
+            "end_time": "datetime"
+        }
+
+        # Define the JSON schema for the event details
+        json_schema = {
+            "current": [event_schema],
+            "upcoming": [event_schema],
+            "completed": [event_schema]
+        }
+        # Prepare the prompt for the generative AI model
+        prompt = f"""Sort the following events into current, upcoming, and completed based on their dates: 
+        event: {events}
+        JSON Schema: {json.dumps(json_schema, indent=2)}
+        """
+
+        # Using `response_mime_type` requires either a Gemini 1.5 Pro or 1.5 Flash model
+        model = genai.GenerativeModel('gemini-1.5-flash',
+                              # Set the `response_mime_type` to output JSON
+                              generation_config={"response_mime_type": "application/json"})
 
         # Send the prompt to the model
-        response = await model.generate_content(prompt)
+        response = model.generate_content(prompt)
 
         # Parse the response to extract sorted events
         sorted_events = response  # Assuming the response contains the sorted events in a structured format
@@ -71,5 +94,54 @@ async def sort_events(events):
             'upcoming': [],
             'completed': []
         }
+    
+# Function to create an event using Gemini API
+async def create_event_with_genai(user_text: str):
+    try:
+        # Define the JSON schema for the event details
+        json_schema = {
+            "title": "string",
+            "location": "string",
+            "description": "string",
+            "start_time": "datetime",
+            "end_time": "datetime"
+        }
+
+        # Create the prompt
+        prompt = f"""
+        Extract the event details from the following text and format them according to the JSON schema provided:
+        
+        Text: "{user_text}"
+        
+        JSON Schema: {json.dumps(json_schema, indent=2)}
+        
+        Response should be a JSON object with the extracted event details.
+        """
+
+        # Initialize the genai model
+        model = genai.GenerativeModel('gemini-1.5-flash',
+                                generation_config={"response_mime_type": "application/json"})
+
+        # Send the prompt to the model
+        response = model.generate_content(prompt)
+
+        # Parse the response to extract event details
+        event_details = response  # Assuming the response contains the event details in a structured format
+
+        # Example of parsing the response (this will depend on the actual response format)
+        if 'title' in event_details and 'location' in event_details and 'start_time' in event_details and 'end_time' in event_details:
+            return json.dumps({
+                "status": "success",
+                "body": event_details
+            })
+        else:
+            raise ValueError("Event details not found in the response")
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return json.dumps({
+            "status": "error",
+            "body": str(e)
+        })
     
     

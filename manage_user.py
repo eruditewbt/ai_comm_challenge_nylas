@@ -88,14 +88,14 @@ class NylasAPI:
 async def update_user(user):
     try:
         # Get the user's address 
-        address_raw = {
-            "calendar": user["calendar"]
-            }
+        address_raw = {}
+        if "calender" in user:
+            address_raw["calender"] = user["calender"]
+        if "profile_url" in user:
+            address_raw["profile_url"] = user["profile_url"]
         #Convert the dictionary to a JSON string
         address = json.dumps(address_raw)
         # Update the user data
-        # #Convert the JSON string back to a dictionary
-        # address_dict = json.loads(address_json)
 
         await DM.update_user(user["username"], user["email"], user["grant_id"], address)
     except Exception as e:
@@ -126,6 +126,23 @@ async def get_username(grant_id):
         return {}
 
     return username
+
+# get address
+async def get_address(grant_id):
+    # Get user data using DatabaseManager
+
+    try:
+        result = await DM.get_user(grant_id)
+
+        # Iterate over the result and print the values
+
+        address_json = result["address"]
+        #Convert the JSON string back to a dictionary
+        address = json.loads(address_json)
+    except Exception as e:
+        return {}
+
+    return address
 
 
 

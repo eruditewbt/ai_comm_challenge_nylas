@@ -1,3 +1,4 @@
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 from fastapi import FastAPI, Request, Response, HTTPException, File, UploadFile, Form, Depends
@@ -6,22 +7,23 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
+from fastapi import Request, Response, UploadFile, File, Form
+from typing import List, Optional
 from typing import Optional
 from db_session_backend import DatabaseSessionBackend, get_session, set_session
-from event import exchange_code, url_con, primary_calendar
-from manage_user import NylasAPI, get_username, update_user
+from manage_user import NylasAPI, get_username, update_user, get_address
 from nylas.models.auth import URLForAuthenticationConfig
 from nylas.models.auth import CodeExchangeRequest
 from nylas.models.errors import NylasOAuthError
 import uuid
 import random
-from gemini import get_ai_suggestions, sort_events, summarize_text
+from gemini import get_ai_suggestions, sort_events, summarize_text, create_event_with_genai
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from event import primary_calendar, list_events, create_event, recent_emails, url_con, exchange_code
+from nylas import Client
 
-
-
-
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -61,6 +63,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Define the Nylas client
+
+nylas = Client(
+    api_key =  os.environ.get("NYLAS_API_KEY"),
+    api_uri = os.environ.get("NYLAS_API_URI"),
+)
+
 # Create a Pydantic model for session data
 class SessionData(BaseModel):
     username: Optional[str] = None
@@ -82,6 +91,29 @@ async def home(request: Request):
     print(f"Session data: {session_data}")
     return templates.TemplateResponse("index.html", {"request": request})
 
+# route to set the session id
+@app.get("/set-session")
+async def set_session_id(request: Request, response: Response):
+    session_id = request.cookies.get("session_id")
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        print(f"New session_id set: {session_id}")
+        try:
+            response.set_cookie(
+                key="session_id",
+                value=session_id,
+                httponly=True,  # Prevent JavaScript access to the cookie
+                secure=False,    # Ensure the cookie is sent over HTTPS
+                samesite="lax",  # Prevent CSRF attacks
+                max_age=86400  #1 day
+                
+            )
+            session_id = request.cookies.get("session_id")
+            print(f"New session_id set: {session_id}")
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            raise HTTPException(status_code = 500, detail= str(e))
+    return RedirectResponse(url="/nylas/auth")
 
 # Route to authenticate with Nylas
 @app.get("/nylas/auth")
@@ -107,6 +139,7 @@ async def login(request: Request, response: Response):
         return RedirectResponse(url)
     else:
         return RedirectResponse(url="/oauth/exchange")
+    
 
 # Route to exchange the code for an access token
 @app.get("/oauth/exchange")
@@ -136,7 +169,7 @@ async def authorized(request: Request, response: Response):
     })
 
     try:
-        exchange = await exchange_code(exchange_request)
+        exchange = exchange_code(exchange_request)
         
         email = exchange.email
         num = random.randint(10000000, 99999999)
@@ -157,13 +190,15 @@ async def authorized(request: Request, response: Response):
         session_data["username"] = username
 
         if not session_id:
-            session_id = "session_id"
+            session_id = str(uuid.uuid4())
             response.set_cookie(
                 key="session_id",
                 value=session_id,
                 httponly=True,  # Prevent JavaScript access to the cookie
-                secure=True,    # Ensure the cookie is sent over HTTPS
-                samesite="lax"  # Prevent CSRF attacks
+                secure=False,    # Ensure the cookie is sent over HTTPS
+                samesite="lax",  # Prevent CSRF attacks
+                max_age=86400  #1 day
+                
             )
             print(f"New session_id set: {session_id}")
 
@@ -176,100 +211,122 @@ async def authorized(request: Request, response: Response):
         print(f"NylasOAuthError: {e}")
         raise HTTPException(status_code=400, detail="Authorization failed")
 
-    return RedirectResponse(url=f"/dasboard/{username}")
-
-
-    
-# Route to get AI suggestions
-@app.post("/get-suggestions")
-async def get_suggestions(request: Request):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        print("Session ID not found in cookies")
-        return JSONResponse(status_code=400, content={"error": "Session ID not found in cookies"})
-
-    session_data = await get_session(session_id)
-    if "grant_id" not in session_data:
-        print("Grant ID not found in session data")
-        raise HTTPException(status_code=400, detail="You are not authorized to view suggestions")
-
-    user_data = {
-        "user_id": session_data["grant_id"],
-        "preferences": ["technology", "science"],  # Example preferences
-        "history": ["event1", "event2"]  # Example history
-    }
-
-    suggestions = await get_ai_suggestions(user_data)
-
-
-    return JSONResponse(content=suggestions)
-
-# Route to login to account
-@app.get("/dashboard")
-async def dashboard( request: Request, response: Response):
-    username= "username"
-    profile_img = "profile_img"
-    date = "August 2024"
-    events = ["Thursday, 25 August: 8:00 AM - Task 1",
-    "Friday, 26 August: 9:00 AM - Task 2",
-    "Saturday, 27 August: 11:00 AM - Task 3"]
-    return templates.TemplateResponse("dashboard.html", {"request": request, "username": username, "profile_img": profile_img, "date": date, "events": events})
+    return RedirectResponse(url=f"/dashboard/{username}")
 
 
 # Route to login to account
 @app.get("/dashboard/{username}")
 async def dashboard(username: str, request: Request, response: Response):
-    session_id = request.cookies.get("session_id") 
-    print(f"Session ID in /dashboard: {session_id}")
-    if not session_id:
-        session_id = "session_id"
+    try:
+        session_id = request.cookies.get("session_id") 
+        print(f"Session ID in /dashboard: {session_id}")
+        if not session_id:
+            session_id = "session_id"
+        
+        print("login session ID: ", session_id)
+        session_data = await get_session(session_id)
+        print("Login session data: ", session_data)
+
+        a = "grant_id" not in session_data 
+        b= "username" in session_data
+        if b:
+            b = username != session_data["username"]
+
+        if a:
+            return RedirectResponse(url="/nylas/auth")
+        if b:
+            return RedirectResponse(url="/nylas/auth")
+
+        if session_id == "session_id":
+                session_id = str(uuid.uuid4())
+                response.set_cookie(
+                    key="session_id",
+                    value=session_id,
+                    httponly=True,  # Prevent JavaScript access to the cookie
+                    secure=False,    # Ensure the cookie is sent over HTTPS
+                    samesite="lax",  # Prevent CSRF attacks
+                    max_age=86400  #1 day
+                    
+                )
+                print(f"New session_id set: {session_id}")
+
+        update = await backend.update_data(session_id, session_data)
+
+        print("output from login update",update)
+
+        if not session_id:
+            return {"error": "Session ID not found in cookies"}
+        
+        profile_url="/favicon.ico"
+        if "profile_url" in session_data:
+            profile_url = session_data["profile_url"]
+
+        date = datetime.now().strftime("%B %Y")
+        event_raw = await primary_calendar(session_data, session_id)
+
+        event = await sort_events(event_raw)
+        print(event)
+        current_events = event['current']
+        upcoming_events = event['upcoming']
+        completed_events = event['completed']
+
+        all_events = current_events + upcoming_events + completed_events
+        summary= await summarize_text(all_events)
+
+        messages = await recent_emails(session_data, session_id)
+        email = session_data["email"]
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return RedirectResponse(url="/error?message=An error occurred&code=500")
     
-    print("login session ID: ", session_id)
-    session_data = await get_session(session_id)
-    print("Login session data: ", session_data)
+    return templates.TemplateResponse("dashboard.html", {"request": request, "email": email, "username": username, "events": all_events, "current_events": current_events, "upcoming_events": upcoming_events, "completed_events": completed_events, "summary": summary, "profile_url": profile_url, "date": date, "messages": messages})   
 
-    a = "grant_id" not in session_data 
-    b= "username" in session_data
-    if b:
-        b = username != session_data["username"]
+    # route to create a new event
 
-    if a:
-        return RedirectResponse(url="/nylas/auth")
-    if b:
-        return RedirectResponse(url="/nylas/auth")
-
-    if session_id == "session_id":
-            session_id = str(uuid.uuid4())
-            response.set_cookie(
-                key="session_id",
-                value=session_id,
-                httponly=True,  # Prevent JavaScript access to the cookie
-                secure=True,    # Ensure the cookie is sent over HTTPS
-                samesite="lax"  # Prevent CSRF attacks
-            )
-            print(f"New session_id set: {session_id}")
-
-    update = await backend.update_data(session_id, session_data)
-
-    print("output from login update",update)
-
-    if not session_id:
-        return {"error": "Session ID not found in cookies"}
+class UserInput(BaseModel):
+    userInput: str
     
-    event_raw = primary_calendar(session_data, session_id)
+class Event(BaseModel):
+    title: str
+    location: str
+    description: str
+    start_time: datetime
+    end_time: datetime
 
-    event = sort_events(event_raw)
-    print(event)
-    current_events = event['current']
-    upcoming_events = event['upcoming']
-    completed_events = event['completed']
+@app.post("/create-event")
+async def create_event_route(request: Request, response: Response, data: dict):
+    try:
+        session_id = request.cookies.get("session_id")
+        if not session_id:
+            return RedirectResponse(url="/nylas/auth")
 
-    all_events = current_events + upcoming_events + completed_events
-    summary= await summarize_text(all_events)
+        session_data = await get_session(session_id)
+        if "grant_id" not in session_data:
+            return RedirectResponse(url="/nylas/auth")
 
-    account = session_data["grant_id"]
-    email = session_data["email"]
-    return templates.TemplateResponse("dashboard.html", {"request": request, "email": email, "account": account, "username": username, "events": all_events, "current_events": current_events, "upcoming_events": upcoming_events, "completed_events": completed_events, "summary": summary})
+        if "text" in data:
+            # Handle AI-generated event
+            post_event = data["text"]
+            event_data = await create_event_with_genai(post_event)
+            if event_data["status"] == "error":
+                return JSONResponse(content=event_data)
+            event_body = event_data["body"]
+        else:
+            # Handle form submission
+            event_body = {
+                "title": data["title"],
+                "location": data["location"],
+                "description": data["description"],
+                "start_time": data["start_time"],
+                "end_time": data["end_time"]
+            }
+
+        result = await create_event(session_data, session_id, event_body)
+        print(result)
+        return JSONResponse(content=result)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JSONResponse(content={"status": "error", "message": str(e)})
 
 # Route to log out
 @app.get("/logout")
@@ -286,20 +343,29 @@ async def logout(request: Request, response: Response):
 # Route to upload a file
 @app.post("/upload/")
 async def upload_file(request: Request, file: UploadFile = File(...)):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        return RedirectResponse(url="/nylas/auth")
+    try:
+        session_id = request.cookies.get("session_id")
+        if not session_id:
+            return RedirectResponse(url="/nylas/auth")
+        session_data = await get_session(session_id)
+        if "grant_id" not in session_data:
+            return RedirectResponse(url="/nylas/auth") 
 
-    # Create a directory for the user if it doesn't exist
-    user_dir = os.path.join(UPLOAD_DIR, session_id)
-    os.makedirs(user_dir, exist_ok=True)
+        # Create a directory for the user if it doesn't exist
+        user_dir = os.path.join(UPLOAD_DIR, session_id)
+        os.makedirs(user_dir, exist_ok=True)
 
-    # Save the uploaded file
-    file_path = os.path.join(user_dir, file.filename)
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
-
-    return {"filename": file.filename, "path": file_path}
+        # Save the uploaded file
+        file_path = os.path.join(user_dir, file.filename)
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+        session_data["profile_url"] = file_path
+        session_result = await set_session(session_id, session_data)
+        results = await update_user(session_data)
+        print(results, session_result)
+        return {"filename": file.filename, "path": file_path}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 # Route to upload a file with form data
 @app.post("/upload/form/")
@@ -319,6 +385,10 @@ async def upload_file_with_form(request: Request, file: UploadFile = File(...), 
 
     return {"filename": file.filename, "username": username, "path": file_path}
 
+# custom error handlers for 404 Not Found
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: StarletteHTTPException):
+    return RedirectResponse(url=f"/error?message=Page not found&code=404")
 
 # Custom exception handler for 405 Method Not Allowed
 @app.exception_handler(405)
@@ -340,25 +410,46 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 async def display_error(request: Request, message: str, code: int):
     return templates.TemplateResponse("error.html", {"request": request, "message": message, "code": code})
     
-# # Route to set session data
-# @app.post("/set-session/")
-# async def set_session(data: SessionData, request: Request, response: Response):
-#     session_id = request.cookies.get("session_id")
-#     if not session_id:
-#         session_id = str(uuid.uuid4())
-#         response.set_cookie(key="session_id", value=session_id)
-#     session_data = backend.read(session_id) or {}
-#     session_data['username'] = data.username
-#     backend.create(session_id, session_data)
-#     return {"message": "Session data set"}
 
-# # Route to get session data
-# @app.get("/get-session/")
-# async def get_session_data(session: dict = Depends(get_session)):
-#     username = session.get('username')
-#     if username:
-#         return {"username": username}
-#     return {"message": "No session data found"}
+
+@app.get("/latest-data")
+async def get_latest_data( request: Request):
+    session_id = request.cookies.get("session_id")
+    if not session_id:
+        return JSONResponse(content={"error": "Session ID not found in cookies"})
+    # Fetch the latest data
+    session_data = await get_session(session_id)
+    date = datetime.now().strftime("%B %Y")
+    profile_url="/favicon.ico"
+    if "profile_url" in session_data:
+        profile_url = session_data["profile_url"]
+    email = session_data["email"]
+    username = session_data["username"]
+    event_raw = list_events(session_data, session_id)
+
+    event = sort_events(event_raw)
+    print(event)
+    current_events = event['current']
+    upcoming_events = event['upcoming']
+    completed_events = event['completed']
+
+    all_events = current_events + upcoming_events + completed_events
+    summary= await summarize_text(all_events)
+
+    messages = recent_emails(session_data, session_id)
+    return {
+        "email": email,
+        "username": username,
+        "events": all_events,
+        "current_events": current_events,
+        "upcoming_events": upcoming_events,
+        "completed_events": completed_events,
+        "summary": summary,
+        "messages": messages,
+        "profile_url": profile_url,
+        "date": date
+    }
+
 
 
 # Run the FastAPI app

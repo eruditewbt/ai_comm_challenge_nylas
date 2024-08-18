@@ -164,9 +164,174 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const manageBtn = document.getElementById("manage_btn");
-  const manageEventLink = document.querySelector(".sidebar a[href='#manage-event']");
+  const manageEventLink = document.querySelector(
+    ".sidebar a[href='#manage-event']"
+  );
 
   manageBtn.addEventListener("click", () => {
     manageEventLink.click();
   });
 });
+
+document
+  .getElementById("ai_create_event_btn")
+  .addEventListener("click", async function () {
+    const eventText = document.getElementById("ai_event_text").value;
+    const resultElement = document.querySelector(".ai-result");
+
+    if (!eventText) {
+      alert("Please enter event details.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/create-event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: eventText }),
+      });
+
+      const result = await response.json();
+
+      if (result.status === "success") {
+        resultElement.innerHTML = "Event created successfully!";
+        // Optionally, you can update the UI with the new event details
+      } else {
+        resultElement.innerHTML = "Error creating event: " + result;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      resultElement.innerHTML = "An error occurred while creating the event.";
+    }
+  });
+
+document
+  .getElementById("event-form")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevent the default form submission
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const formResult = document.querySelector(".form-result");
+
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    try {
+      const response = await fetch("/create-event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (result.status === "success") {
+        formResult.innerHTML = "Event created successfully!";
+        // Optionally, you can update the UI with the new event details
+      } else {
+        formResult.innerHTML = "Error creating event: " + result;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      formResult.innerHTML = "An error occurred while creating the event.";
+    }
+  });
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   async function fetchLatestData() {
+//     try {
+//       const response = await fetch("/latest-data");
+//       const data = await response.json();
+
+//       if (data.error) {
+//         console.error("Error fetching latest data:", data.error);
+//         return;
+//       }
+
+//       // Update profile picture and username
+//       document.querySelector(".profile img").src = data.profile_url;
+//       document.querySelector(".profile span").textContent = data.username;
+
+//       // Update event statistics
+//       document.querySelector(
+//         "#all p"
+//       ).textContent = `all: ${data.events.length}`;
+//       document.querySelector(
+//         "#current p"
+//       ).textContent = `current events: ${data.current_events.length}`;
+//       document.querySelector(
+//         "#upcoming p"
+//       ).textContent = `upcoming events: ${data.upcoming_events.length}`;
+//       document.querySelector(
+//         "#completed p"
+//       ).textContent = `completed events: ${data.completed_events.length}`;
+
+//       // Update event lists
+//       updateEventList("#all ul", data.events);
+//       updateEventList("#current ul", data.current_events);
+//       updateEventList("#upcoming ul", data.upcoming_events);
+//       updateEventList("#completed ul", data.completed_events);
+
+//       // Update summary
+//       document.querySelector(".quote p").textContent = data.summary;
+
+//       // Update messages
+//       updateMessageList(".messages .list-group", data.messages);
+
+//       // Update date
+//       document.querySelector(".calendar h3").textContent = data.date;
+//     } catch (error) {
+//       console.error("Error fetching latest data:", error);
+//     }
+//   }
+
+//   function updateEventList(selector, events) {
+//     const list = document.querySelector(selector);
+//     list.innerHTML = "";
+//     events.forEach((event) => {
+//       const listItem = document.createElement("li");
+//       listItem.className = "list-group-item";
+//       listItem.textContent = event;
+//       list.appendChild(listItem);
+//     });
+//   }
+
+//   function updateMessageList(selector, messages) {
+//     const list = document.querySelector(selector);
+//     list.innerHTML = "";
+//     messages.forEach((message) => {
+//       const listItem = document.createElement("li");
+//       listItem.className = "list-group-item";
+//       const messageDiv = document.createElement("div");
+//       messageDiv.className = "message";
+//       const img = document.createElement("img");
+//       img.src = message.profile_url;
+//       img.alt = "Profile Picture";
+//       const contentDiv = document.createElement("div");
+//       contentDiv.className = "content";
+//       const name = document.createElement("h3");
+//       name.textContent = message.name;
+//       const content = document.createElement("p");
+//       content.textContent = message.content;
+//       contentDiv.appendChild(name);
+//       contentDiv.appendChild(content);
+//       messageDiv.appendChild(img);
+//       messageDiv.appendChild(contentDiv);
+//       listItem.appendChild(messageDiv);
+//       list.appendChild(listItem);
+//     });
+//   }
+
+//   // Fetch data every 5 seconds
+//   setInterval(fetchLatestData, 5000);
+
+//   // Initial fetch
+//   fetchLatestData();
+//   setInterval(fetchLatestData, 5000);
+// });

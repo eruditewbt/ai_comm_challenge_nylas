@@ -1,13 +1,18 @@
 import os
+from dotenv import load_dotenv
 from nylas import Client
 
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from pydantic import BaseModel
 
 from db_session_backend import set_session
 from manage_user import update_user
+import json
 
+
+# Load environment variables
+load_dotenv()
 
 # Define the Nylas client
 
@@ -16,16 +21,16 @@ nylas = Client(
     api_uri = os.environ.get("NYLAS_API_URI"),
 )
 
-async def url_con(config):
+def url_con(config):
     try:
-        u = await nylas.auth.url_for_oauth2(config)
+        u = nylas.auth.url_for_oauth2(config)
         return u 
     except Exception as e:
         return str(e)
 
-async def exchange_code(req):
+def exchange_code(req):
     try:
-        ex = await nylas.auth.exchange_code_for_token(req)
+        ex = nylas.auth.exchange_code_for_token(req)
         return ex
     except Exception as e:
         return str(e)
@@ -37,7 +42,8 @@ async def primary_calendar(session_data: dict, session_id: str):
         grant_id = session_data["grant_id"]
 
         if "calendars" in session_data:
-            return list_events(session_data, session_id)
+            events = await list_events(session_data, session_id)
+            return events
         query_params = {"limit": 5}
         calendars, _, _ = nylas.calendars.list(grant_id, query_params)
         print(f"Calendars: {calendars}")
@@ -49,7 +55,8 @@ async def primary_calendar(session_data: dict, session_id: str):
                 results = await update_user(session_data)
                 [result]= results
                 print(f"Update Result: {result}, Session Result: {session_result}")
-                return list_events(session_data, session_id)
+                events = await list_events(session_data, session_id)
+                return events
 
         print("Primary calendar not found")
         return "Primary calendar not found"
@@ -68,7 +75,8 @@ async def list_events(session_data: dict, session_id: str):
     print(f"Calendar ID: {calendar_id}, Grant ID: {grant_id}")
 
     if not calendar_id:
-        return primary_calendar(session_data, session_id)
+        cal=primary_calendar(session_data, session_id)
+        return cal
 
     query_params = {"calendar_id": calendar_id, "limit": 5}
     try:
@@ -81,45 +89,54 @@ async def list_events(session_data: dict, session_id: str):
     except Exception as e:
         return str(e)
 
+
     
 # Route to create an event
 # @app.get("/nylas/create-event")
 async def create_event(session_data: dict, session_id: str, event: dict):
 
-
     calendar_id = session_data["calendar"]
     grant_id = session_data["grant_id"]
     if not calendar_id:
-        return primary_calendar(session_data, session_id)
+        cal = primary_calendar(session_data, session_id)
+        return cal
 
-    now = datetime.now()
-    now_plus_5 = now + timedelta(minutes=5)
+    # Convert provided start_time and end_time to Unix timestamps
+    start_time_obj = datetime.strptime(event["start_time"], "%Y-%m-%dT%H:%M")
+    end_time_obj = datetime.strptime(event["end_time"], "%Y-%m-%dT%H:%M")
 
-    start_time = int(datetime(now.year, now.month, now.day, now_plus_5.hour,
-                              now_plus_5.minute, now_plus_5.second).timestamp())
-
-    now_plus_35 = now_plus_5 + timedelta(minutes=35)
-
-    end_time = int(datetime(now.year, now.month, now.day, now_plus_35.hour,
-                            now_plus_35.minute, now_plus_35.second).timestamp())
+    start_timestamp = int(time.mktime(start_time_obj.timetuple()))
+    end_timestamp = int(time.mktime(end_time_obj.timetuple()))
 
     query_params = {"calendar_id": calendar_id}
 
     request_body = {
         "when": {
-            "start_time": start_time,
-            "end_time": end_time,
+            "start_time": start_timestamp,
+            "end_time": end_timestamp,
         },
-        "title": event.title,
-        "location": event.location,
-        "description": event.description,
+        "title": event["title"],
+        "location": event["location"],
+        "description": event["description"],
     }
 
     try:
         event = nylas.events.create(grant_id, query_params=query_params, request_body=request_body)
-        return event
+        if 'title' in event and 'location' in event and 'start_time' in event and 'end_time' in event:
+            return json.dumps({
+                "status": "success",
+                "body": event
+            })
+        else:
+            raise ValueError("Event details not found in the response")
+
     except Exception as e:
-        return str(e)
+        print(f"An error occurred: {str(e)}")
+        return json.dumps({
+            "status": "error",
+            "body": str(e)
+        })
+    
 
     
 # Route to get recent emails
@@ -132,9 +149,9 @@ async def recent_emails(session_data: dict, session_id: str):
 
         grant_id = session_data["grant_id"]
         messages, _, _ = await nylas.messages.list(grant_id, query_params)
-        [event]= messages
+        [messages]= messages
         # return event.body
-        return event
+        return messages 
     except Exception as e:
         return str(e)
 

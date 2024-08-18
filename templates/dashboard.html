@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<main class="main-content" id="home"></main>
+<main class="main-content" id="home" style="display: none;"></main>
   <div class="event">
     <header>
       <div class="profile">
@@ -7,7 +7,7 @@
         <span>{{ username }}</span>
       </div>
     </header>
-    <section class="home"></section>
+    <section class="home">
       <h2>User Dashboard</h2>
       <div class="stat">
         <h3>Event Statistics</h3>
@@ -86,7 +86,7 @@
     </header>
     <section>
       <div>
-        <form action="" method="POST">
+        <form id="event-form" >
           <label for="title">Event Title:</label>
           <input type="text" name="title" id="title" required class="form-control" />
 
@@ -96,14 +96,6 @@
           <label for="location">Event Location:</label>
           <input type="text" name="location" id="location" required class="form-control" />
 
-          <label for="category">Event Category:</label>
-          <select name="category" id="category" required class="form-control"></select>
-            <option value="meeting">Meeting</option>
-            <option value="workshop">Workshop</option>
-            <option value="conference">Conference</option>
-            <option value="social">Social</option>
-          </select>
-
           <label for="start_time">Start Time:</label>
           <input type="datetime-local" name="start" id="start_time" required class="form-control" />
 
@@ -112,8 +104,20 @@
 
           <button type="submit" class="btn btn-primary">Create Event</button>
         </form>
+        <p class="form-result"></p>
       </div>
     </section>
+    <!-- New Section for Create Event with AI -->
+    <section>
+      <div>
+        <h2>Create Event with AI</h2>
+        <label for="ai_event_text">Event Details:</label>
+        <textarea id="ai_event_text" required class="form-control"></textarea>
+        <button id="ai_create_event_btn" class="btn btn-primary">Create Event with AI</button>
+      </div>
+      <p class="ai-result"></p>
+    </section>
+
   </div>
 </main>
 <main class="main-content" id="messages" style="display: none;">
@@ -154,7 +158,7 @@
     <h2>Settings</h2>
     <div class="account">
       <h3>Account Settings</h3>
-      <form action="/upload/form" method="POST" enctype="multipart/form-data">
+      <form action="/upload" method="POST" enctype="multipart/form-data">
         <label for="profile-image">Upload Profile Image:</label>
         <input
           type="image"

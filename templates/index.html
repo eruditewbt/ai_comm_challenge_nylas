@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% block content %}
 
-<div class="main-content" id="home">
+<div class="main-content" id="home" style="display: none">
   <header class="index">
     <h1 class="display-4">Welcome to the Smart Scheduling Assistant</h1>
 
@@ -9,8 +9,8 @@
       your schedule efficiently. It uses advanced algorithms to analyze your
       availability and preferences, and then suggests optimal meeting times.
     </p>
-    <a href="/nylas/auth">
-      <button class="button">Sign Up</button>
+    <a href="/set-session">
+      <button class="button">Sign In</button>
     </a>
   </header>
   <section>
@@ -67,12 +67,12 @@
       account and connect your calendar. You'll be able to schedule meetings
       more efficiently and save valuable time.
     </p>
-    <a href="/nylas/auth">
-      <button class="button">Sign Up</button>
+    <a href="/set-session">
+      <button class="button">Sign In</button>
     </a>
   </section>
 </div>
-<div class="main-content" id="manage-event">
+<div class="main-content" id="manage-event" style="display: none">
   <h2 class="display-5">Manage Events with AI</h2>
   <section>
     <p>
@@ -98,9 +98,12 @@
       attendee engagement, event success metrics, and make data-driven decisions
       to improve future events.
     </p>
+    <a href="/set-session">
+      <button class="button">Sign In</button>
+    </a>
   </section>
 </div>
-<div class="main-content" id="messages">
+<div class="main-content" id="messages" style="display: none">
   <section>
     <h2 class="display-5">Manage Emails</h2>
     <p>
@@ -124,9 +127,12 @@
       emails. You can easily draft, format, and send replies directly from the
       project platform.
     </p>
+    <a href="/set-session">
+      <button class="button">Sign In</button>
+    </a>
   </section>
 </div>
-<div class="main-content" id="settings">
+<div class="main-content" id="settings" style="display: none">
   <section>
     <h2 class="display-5">Manage User Data</h2>
     <p>
@@ -161,6 +167,9 @@
       connecting to different email providers, our project allows you to
       seamlessly manage multiple accounts from a single interface.
     </p>
+    <a href="/set-session">
+      <button class="button">Sign In</button>
+    </a>
   </section>
 </div>
 {% endblock %}

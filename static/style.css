@@ -19,7 +19,6 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--background-color);
-  text-decoration: none;
   display: flex;
   flex-direction: column;
 }
@@ -34,14 +33,10 @@ body {
 
 /*======================
   Header Styles
-======================
-  */
+======================*/
 
 header {
   display: flex;
-}
-
-.index {
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -53,38 +48,50 @@ header h1 {
   margin: 0;
 }
 
-/*============================
-  font styles
-  ============================
-  */
+/*======================
+  Font Styles
+======================*/
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 
-.display-4 {
-  font-family: "Roboto", sans-serif;
-  font-size: 2.5rem;
+.display-4,
+.display-5,
+.lead,
+p,
+.list-group-item {
+  font-family: var(--font-family);
+}
+
+.display-4,
+.display-5 {
   font-weight: 700;
 }
 
-.lead {
-  font-family: "Roboto", sans-serif;
-  font-size: 1.25rem;
+.display-4 {
+  font-size: 2.5rem;
 }
 
 .display-5 {
-  font-family: "Roboto", sans-serif;
   font-size: 2rem;
-  font-weight: 700;
 }
 
-p {
-  font-family: "Roboto", sans-serif;
-  font-size: 1rem;
+.lead {
+  font-size: 1.25rem;
 }
 
+p,
 .list-group-item {
-  font-family: "Roboto", sans-serif;
   font-size: 1rem;
+}
+
+h2,
+h3,
+.tablinks,
+.quote p,
+.day,
+.form-control,
+.btn {
+  font-size: 16px;
 }
 
 h2 {
@@ -97,26 +104,8 @@ h3 {
   font-weight: bold;
 }
 
-.tablinks {
-  font-size: 16px;
-}
-
 .quote p {
-  font-size: 16px;
   font-style: italic;
-}
-
-.day {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.form-control {
-  font-size: 16px;
-}
-
-.btn {
-  font-size: 16px;
 }
 
 .error h1 {
@@ -130,8 +119,7 @@ h3 {
 
 /*======================
   Main Content Styles
-======================
-  */
+======================*/
 
 .error {
   color: red;
@@ -143,34 +131,24 @@ h3 {
   flex: 1;
   padding: var(--padding);
   margin-left: 20%;
+  min-height: 100vh;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-}
-
-section .fb {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  margin-bottom: 10%;
-  flex-direction: row;
-  width: 90%;
 }
 
 section {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-bottom: 10%;
-  flex-direction: column;
   width: 90%;
+  padding-bottom: 10%;
+  margin-bottom: 10%;
   border-bottom: 1px solid var(--primary-color);
 }
 
-section h2 {
-  color: var(--primary-color);
-}
-
+section h2,
 section p {
   color: var(--primary-color);
   margin: 0;
@@ -210,13 +188,11 @@ section img {
 }
 
 .sidebar ul li {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* text-align: center; */
-  flex-grow: 1;
-  max-height: 4.5rem;
 }
 
 .sidebar ul li:hover {
@@ -242,12 +218,12 @@ section img {
 
 /* Custom styles for toggle icons */
 .sidebar ul li i.fa-toggle-on {
-  color: green; /* Customize the color for the toggle-on icon */
+  color: green;
   transition: transform 0.3s;
 }
 
 .sidebar ul li i.fa-toggle-off {
-  color: red; /* Customize the color for the toggle-off icon */
+  color: red;
   transition: transform 0.3s;
 }
 
@@ -284,8 +260,8 @@ section img {
 
 /*======================
   Button Styles
-======================
- */
+======================*/
+
 .button {
   background-color: var(--primary-color);
   color: var(--secondary-color);
@@ -298,8 +274,8 @@ section img {
   overflow: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
   margin: 20px;
-  padding: 10px 20px;
 }
+
 .button:hover {
   background-color: var(--secondary-color);
   color: var(--primary-color);
@@ -343,14 +319,9 @@ section img {
   box-shadow: 0 0 10px var(--primary-color);
 }
 
-.button a {
-  text-decoration: none;
-}
-
 /*======================
-  DashBoard Styles
-======================
-  */
+  Dashboard Styles
+======================*/
 
 .profile {
   display: flex;
@@ -370,7 +341,8 @@ input[type="text"] {
   border-radius: 4px;
 }
 
-.dashboard {
+.dashboard,
+.calendar {
   background-color: #fff;
   padding: 20px;
   margin-top: 20px;
@@ -401,13 +373,6 @@ input[type="text"] {
   margin-top: 20px;
 }
 
-.calendar {
-  background-color: #fff;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .days {
   display: flex;
   flex-wrap: wrap;
@@ -421,7 +386,10 @@ input[type="text"] {
   box-sizing: border-box;
 }
 
-/* Style the tab buttons */
+/*======================
+  Tab Styles
+======================*/
+
 .tab {
   overflow: hidden;
   border: 1px solid #ccc;
@@ -446,7 +414,6 @@ input[type="text"] {
   background-color: #ccc;
 }
 
-/* Style the tab content */
 .tabcontent {
   display: none;
   padding: 6px 12px;
@@ -472,8 +439,7 @@ input[type="text"] {
 
 /*======================
   Footer Styles
-======================
-  */
+======================*/
 
 .footer {
   background-color: var(--primary-color);
@@ -481,18 +447,17 @@ input[type="text"] {
   text-align: center;
   padding: var(--padding);
   width: 100%;
-  margin-bottom: 0;
 }
 
 /*======================
   Responsive Styles
-======================
-  */
+======================*/
 
 @media (max-width: 768px) {
   .main-content {
     margin: 0;
   }
+
   .container {
     flex-direction: column;
   }
@@ -518,8 +483,267 @@ input[type="text"] {
   .sidebar ul li a {
     display: none;
   }
+
   .footer {
-    padding: var(--padding);
     margin-bottom: var(--sidebar-height);
   }
+}
+
+/*======================
+  Dashboard Styles  
+======================*/
+
+/* General Styles */
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  display: none;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2,
+h3 {
+  color: #444;
+}
+
+p {
+  margin: 10px 0;
+}
+
+/* Profile Section */
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 2px solid #fff;
+}
+
+/* Dashboard Statistics */
+.stat {
+  margin-top: 20px;
+}
+
+.tab {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.tab button {
+  flex: 1;
+  padding: 10px;
+  background-color: #f4f4f9;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #007bff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
+
+.tab button.active,
+.tab button:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.tabcontent {
+  display: none;
+  padding: 10px;
+  background-color: #f4f4f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tabcontent.show {
+  display: block;
+}
+
+/* Event List */
+.list-group {
+  padding: 0;
+  list-style: none;
+}
+
+.list-group-item {
+  padding: 10px;
+  background-color: #fff;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #f4f4f9;
+}
+
+/* Quote Section */
+.quote {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-left: 5px solid #007bff;
+  border-radius: 8px;
+  font-style: italic;
+}
+
+/* Calendar Section */
+.calendar {
+  margin-top: 20px;
+}
+
+.calendar h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.day {
+  flex: 1;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.day:hover {
+  background-color: #007bff;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* Buttons */
+.button,
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover,
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Form Controls */
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+textarea.form-control {
+  height: 100px;
+}
+
+/* Messages Section */
+.messages {
+  margin-top: 20px;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f4f4f9;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.message img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.message .content {
+  flex: 1;
+}
+
+.message .content h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #007bff;
+}
+
+.message .content p {
+  margin: 5px 0 0;
+  color: #666;
+}
+
+/* Settings Section */
+.settings h2 {
+  color: #007bff;
+}
+
+.settings .account {
+  background-color: #f4f4f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.settings .account img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+  margin-bottom: 15px;
+}
+
+.settings .account button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.settings .account button:hover {
+  background-color: #0056b3;
+}
+
+.settings .account button a {
+  color: #fff;
+  text-decoration: none;
 }

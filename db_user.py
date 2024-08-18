@@ -37,7 +37,7 @@ class DatabaseManager:
         self.connection = sqlite3.connect('example.db')
         self.cursor = self.connection.cursor()
 
-    async def create_user(self, username, email, grant_id=None, address=None):
+    async def create_user(self, username, email, grant_id, address=None):
         self.cursor.execute('''
             INSERT INTO users (username, email, grant_id, address)
             VALUES (?, ?, ?, ?)
@@ -51,7 +51,7 @@ class DatabaseManager:
         ''', (grant_id,))
         return self.cursor.fetchone()
 
-    async def update_user(self, user_id, username=None, email=None, grant_id=None, address=None):
+    async def update_user(self, user_id, username, email, grant_id, address=None):
         self.cursor.execute('''
             UPDATE users
             SET username = ?, email = ?, grant_id = ?, address = ?
