@@ -1,0 +1,181 @@
+{% extends "base.html" %} {% block content %}
+<main class="main-content" id="home"></main>
+  <div class="event">
+    <header>
+      <div class="profile">
+        <img src="{{ profile_url }}" alt="Profile Picture" />
+        <span>{{ username }}</span>
+      </div>
+    </header>
+    <section class="home"></section>
+      <h2>User Dashboard</h2>
+      <div class="stat">
+        <h3>Event Statistics</h3>
+        <div class="tab">
+          <button class="tablinks active" onclick="openTab(event, 'all')">
+            <i class="fas fa-list"></i> All
+          </button>
+          <button class="tablinks" onclick="openTab(event, 'current')">
+            <i class="fas fa-clock"></i> Current
+          </button>
+          <button class="tablinks" onclick="openTab(event, 'upcoming')">
+            <i class="fas fa-calendar-alt"></i> Upcoming
+          </button>
+          <button class="tablinks" onclick="openTab(event, 'completed')">
+            <i class="fas fa-check-circle"></i> Completed
+          </button>
+        </div>
+        <div id="all" class="tabcontent show">
+          <p>all: {{ events.length }}</p>
+          <ul class="list-group">
+            {% for event in events %}
+            <li class="list-group-item">{{ event }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div id="current" class="tabcontent">
+          <p>current events: {{ current_events.length }}</p>
+          <ul class="list-group"></ul>
+            {% for event in current_events %}
+            <li class="list-group-item">{{ event }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div id="upcoming" class="tabcontent">
+          <p>upcoming events: {{ upcoming_events.length }}</p>
+          <ul class="list-group"></ul>
+            {% for event in upcoming_events %}
+            <li class="list-group-item">{{ event }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div id="completed" class="tabcontent">
+          <p>completed events: {{ completed_events.length }}</p>
+          <ul class="list-group"></ul>
+            {% for event in completed_events %}
+            <li class="list-group-item">{{ event }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div>
+        <button class="button" id="manage_btn"></button>
+      </div>
+      <div class="quote">
+        <p>{{ summary }}</p>
+      </div>
+    </section>
+    <aside class="calendar">
+      <h3>{{ date }}</h3>
+      <div class="days">
+        <div class="day">1</div>
+        <div class="day">2</div>
+        <div class="day">3</div>
+        <!-- Add more days as needed -->
+      </div>
+    </aside>
+  </div>
+</main>
+<main class="main-content" id="manage-event" style="display: none;">
+  <div class="manage-event"></div>
+    <header>
+      <div class="create">
+        <img src="{{ profile_url }}" alt="Profile Picture" />
+        <span>{{ username }}</span>
+      </div>
+    </header>
+    <section>
+      <div>
+        <form action="" method="POST">
+          <label for="title">Event Title:</label>
+          <input type="text" name="title" id="title" required class="form-control" />
+
+          <label for="description">Event Description:</label>
+          <textarea name="description" id="description" required class="form-control"></textarea>
+
+          <label for="location">Event Location:</label>
+          <input type="text" name="location" id="location" required class="form-control" />
+
+          <label for="category">Event Category:</label>
+          <select name="category" id="category" required class="form-control"></select>
+            <option value="meeting">Meeting</option>
+            <option value="workshop">Workshop</option>
+            <option value="conference">Conference</option>
+            <option value="social">Social</option>
+          </select>
+
+          <label for="start_time">Start Time:</label>
+          <input type="datetime-local" name="start" id="start_time" required class="form-control" />
+
+          <label for="end_time">End Time:</label>
+          <input type="datetime-local" name="end" id="end_time" required class="form-control" />
+
+          <button type="submit" class="btn btn-primary">Create Event</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+<main class="main-content" id="messages" style="display: none;">
+  <div class="messages">
+    <header>
+      <div class="profile">
+        <img src="{{ profile_url }}" alt="Profile Picture" />
+        <span>{{ username }}</span>
+      </div>
+    </header>
+    <section class="notifications">
+      <h2>Notifications</h2>
+      <ul id="notification-list" class="list-group"></ul>
+        <!-- Notifications will be dynamically inserted here -->
+      </ul>
+    </section>
+    <section>
+      <h2>Messages</h2>
+      <ul class="list-group">
+        <li class="list-group-item"></li>
+          <div class="message">
+            <img src="{{ profile_url }}" alt="Profile Picture" />
+            {% for message in messages %}
+            <div class="content">
+              <h3>{{ message.name }}</h3>
+              <p>{{ message.content }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </li>
+        <!-- Repeat for each message -->
+      </ul>
+    </section>
+  </div>
+</main>
+<main class="main-content" id="settings" style="display: none;">
+  <section>
+    <h2>Settings</h2>
+    <div class="account">
+      <h3>Account Settings</h3>
+      <form action="/upload/form" method="POST" enctype="multipart/form-data">
+        <label for="profile-image">Upload Profile Image:</label>
+        <input
+          type="image"
+          name="profile-image"
+          id="profile-image"
+          accept="image/*"
+          required
+          class="form-control"
+        />
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+      <img src="{{ profile_image }}" alt="Profile Image" />
+      <p>{{ username }}</p>
+      <button class="add-account">
+        <a href="/nylas/auth" class="add-account">Add Account</a>
+      </button>
+      <button class="logout">
+        <a href="logout" class="add-account">Logout</a>
+      </button>
+    </div>
+    <!-- Add other settings options here -->
+  </section>
+</main>
+{% endblock %}

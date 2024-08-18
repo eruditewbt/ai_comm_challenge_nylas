@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>File Upload</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+        font-family: 'Your-Font-Name', sans-serif;
+        font-size: 16px;
+      }
+      
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+      }
+      
+      label {
+        font-size: 18px;
+      }
+      
+      .form-control-file {
+        font-size: 16px;
+      }
+      
+      .btn-primary {
+        font-size: 18px;
+      }
+      
+      .icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container"></div>
+      <h1 class="mt-5"></h1>
+        <img class="icon" src="h1-icon.png" alt="H1 Icon">
+        File Upload
+      </h1>
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="file">
+            <img class="icon" src="label-icon.png" alt="Label Icon">
+            Choose File:
+          </label>
+          <input type="file" class="form-control-file" name="file" id="file" />
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <img class="icon" src="upload-icon.png" alt="Upload Icon">
+          Upload
+        </button>
+      </form>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

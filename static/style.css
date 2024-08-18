@@ -1,0 +1,525 @@
+:root {
+  --primary-color: #333;
+  --secondary-color: #fff;
+  --background-color: #bcbaba;
+  --sidebar-width: 110px;
+  --sidebar-height: 60px;
+  --padding: 20px;
+  --font-family: "Roboto", sans-serif;
+  --accent-color: #f39c12;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary-color) var(--primary-color);
+}
+
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+/*======================
+  Header Styles
+======================
+  */
+
+header {
+  display: flex;
+}
+
+.index {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+header h1 {
+  color: var(--primary-color);
+  margin: 0;
+}
+
+/*============================
+  font styles
+  ============================
+  */
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+.display-4 {
+  font-family: "Roboto", sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.lead {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.25rem;
+}
+
+.display-5 {
+  font-family: "Roboto", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+}
+
+.list-group-item {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.tablinks {
+  font-size: 16px;
+}
+
+.quote p {
+  font-size: 16px;
+  font-style: italic;
+}
+
+.day {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.form-control {
+  font-size: 16px;
+}
+
+.btn {
+  font-size: 16px;
+}
+
+.error h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.error p {
+  font-size: 18px;
+}
+
+/*======================
+  Main Content Styles
+======================
+  */
+
+.error {
+  color: red;
+  margin: 0;
+  height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: var(--padding);
+  margin-left: 20%;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+section .fb {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 10%;
+  flex-direction: row;
+  width: 90%;
+}
+
+section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 10%;
+  flex-direction: column;
+  width: 90%;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+section h2 {
+  color: var(--primary-color);
+}
+
+section p {
+  color: var(--primary-color);
+  margin: 0;
+}
+
+section img {
+  width: 100%;
+  max-width: 500px;
+  margin: 20px 0;
+}
+
+/*======================
+  Sidebar Styles
+======================*/
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: var(--padding);
+  z-index: 100;
+  position: fixed;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+
+.sidebar ul li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* text-align: center; */
+  flex-grow: 1;
+  max-height: 4.5rem;
+}
+
+.sidebar ul li:hover {
+  color: var(--accent-color);
+}
+
+.sidebar ul li a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.sidebar ul li i {
+  width: 3rem;
+  height: 3rem;
+  font-size: 3em;
+}
+
+/* Custom styles for toggle icons */
+.sidebar ul li i.fa-toggle-on {
+  color: green; /* Customize the color for the toggle-on icon */
+  transition: transform 0.3s;
+}
+
+.sidebar ul li i.fa-toggle-off {
+  color: red; /* Customize the color for the toggle-off icon */
+  transition: transform 0.3s;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .sidebar ul {
+    flex-direction: row;
+    height: auto;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
+  .sidebar ul li {
+    flex-grow: 0;
+  }
+
+  .sidebar ul li a {
+    justify-content: flex-start;
+    padding: var(--padding);
+  }
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  flex: 1;
+}
+
+/*======================
+  Button Styles
+======================
+ */
+.button {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 20px;
+  padding: 10px 20px;
+}
+.button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.button::before,
+.button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0)
+  );
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.button::before {
+  transform: translateX(-100%) translateY(-100%);
+}
+
+.button::after {
+  transform: translateX(100%) translateY(100%);
+}
+
+.button:hover::before,
+.button:hover::after {
+  opacity: 1;
+  transform: translateX(0) translateY(0);
+}
+
+.button:active {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+.button a {
+  text-decoration: none;
+}
+
+/*======================
+  DashBoard Styles
+======================
+  */
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+input[type="text"] {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.dashboard {
+  background-color: #fff;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats,
+.tasks {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.stat,
+.tasks {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.stat:last-child,
+.tasks:last-child {
+  margin-right: 0;
+}
+
+.quote {
+  font-style: italic;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.calendar {
+  background-color: #fff;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.days {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.day {
+  width: 14.28%;
+  text-align: center;
+  padding: 10px 0;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+/* Style the tab buttons */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.notifications {
+  margin-top: 20px;
+}
+
+.notifications ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.notifications li {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/*======================
+  Footer Styles
+======================
+  */
+
+.footer {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  text-align: center;
+  padding: var(--padding);
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/*======================
+  Responsive Styles
+======================
+  */
+
+@media (max-width: 768px) {
+  .main-content {
+    margin: 0;
+  }
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: var(--sidebar-height);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .sidebar ul {
+    flex-direction: row;
+  }
+
+  .sidebar ul li {
+    margin: 0;
+  }
+
+  .sidebar ul li a {
+    display: none;
+  }
+  .footer {
+    padding: var(--padding);
+    margin-bottom: var(--sidebar-height);
+  }
+}

@@ -4,6 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+fastapi = "*"
+uvicorn = "*"
+nylas = "*"
+python-dotenv = "*"
+sqlalchemy = "*"
+databases = "*"
+aiosqlite = "*"
+jinja2 = "*"
+python-multipart = "*"
+itsdangerous = "*"
+google-generativeai = "*"
 
 [dev-packages]
 

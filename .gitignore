@@ -1,0 +1,6 @@
+.env
+__pycache__/
+test.db
+example.db
+smart-scheduling-app-9bd39-firebase-adminsdk-jzwiy-df71838724.json
+user.py
