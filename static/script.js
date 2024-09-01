@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
   toggleButton.addEventListener("click", function () {
     sidebar.classList.toggle("collapsed");
 
+    document.body.classList.toggle("dark-mode");
+
     if (sidebar.classList.contains("collapsed")) {
       toggleButton.innerHTML = '<i class="fas fa-toggle-off"></i>';
     } else {
@@ -44,9 +46,6 @@ function initializeSidebar() {
       });
     });
 }
-
-// Call the function to initialize the sidebar
-initializeSidebar();
 
 // Call the function to initialize the sidebar
 initializeSidebar();
@@ -190,7 +189,8 @@ document
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: eventText }),
+        // body: JSON.stringify({ text: eventText }),
+        body: { text: eventText },
       });
 
       const result = await response.json();
@@ -227,7 +227,8 @@ document
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        // body: JSON.stringify(data),
+        body: data,
       });
 
       const result = await response.json();
@@ -235,7 +236,7 @@ document
         formResult.innerHTML = "Event created successfully!";
         // Optionally, you can update the UI with the new event details
       } else {
-        formResult.innerHTML = "Error creating event: " + result;
+        formResult.innerHTML = "Error creating event: " + result.body;
       }
     } catch (error) {
       console.error("Error:", error);
@@ -243,95 +244,94 @@ document
     }
   });
 
-// document.addEventListener("DOMContentLoaded", () => {
-//   async function fetchLatestData() {
-//     try {
-//       const response = await fetch("/latest-data");
-//       const data = await response.json();
+document.addEventListener("DOMContentLoaded", () => {
+  async function fetchLatestData() {
+    try {
+      const response = await fetch("/latest-data");
+      const data = await response.json();
 
-//       if (data.error) {
-//         console.error("Error fetching latest data:", data.error);
-//         return;
-//       }
+      if (data.error) {
+        console.error("Error fetching latest data:", data.error);
+        return;
+      }
 
-//       // Update profile picture and username
-//       document.querySelector(".profile img").src = data.profile_url;
-//       document.querySelector(".profile span").textContent = data.username;
+      // Update profile picture and username
+      document.querySelector(".profile img").src = data.profile_url;
+      document.querySelector(".profile span").textContent = data.username;
 
-//       // Update event statistics
-//       document.querySelector(
-//         "#all p"
-//       ).textContent = `all: ${data.events.length}`;
-//       document.querySelector(
-//         "#current p"
-//       ).textContent = `current events: ${data.current_events.length}`;
-//       document.querySelector(
-//         "#upcoming p"
-//       ).textContent = `upcoming events: ${data.upcoming_events.length}`;
-//       document.querySelector(
-//         "#completed p"
-//       ).textContent = `completed events: ${data.completed_events.length}`;
+      // Update event statistics
+      document.querySelector(
+        "#all p"
+      ).textContent = `all: ${data.events.length}`;
+      document.querySelector(
+        "#current p"
+      ).textContent = `current events: ${data.current_events.length}`;
+      document.querySelector(
+        "#upcoming p"
+      ).textContent = `upcoming events: ${data.upcoming_events.length}`;
+      document.querySelector(
+        "#completed p"
+      ).textContent = `completed events: ${data.completed_events.length}`;
 
-//       // Update event lists
-//       updateEventList("#all ul", data.events);
-//       updateEventList("#current ul", data.current_events);
-//       updateEventList("#upcoming ul", data.upcoming_events);
-//       updateEventList("#completed ul", data.completed_events);
+      // Update event lists
+      updateEventList("#all ul", data.events);
+      updateEventList("#current ul", data.current_events);
+      updateEventList("#upcoming ul", data.upcoming_events);
+      updateEventList("#completed ul", data.completed_events);
 
-//       // Update summary
-//       document.querySelector(".quote p").textContent = data.summary;
+      // Update summary
+      document.querySelector(".quote p").textContent = data.summary;
 
-//       // Update messages
-//       updateMessageList(".messages .list-group", data.messages);
+      // Update messages
+      updateMessageList(".messages .list-group", data.messages);
 
-//       // Update date
-//       document.querySelector(".calendar h3").textContent = data.date;
-//     } catch (error) {
-//       console.error("Error fetching latest data:", error);
-//     }
-//   }
+      // Update date
+      document.querySelector(".calendar h3").textContent = data.date;
+    } catch (error) {
+      console.error("Error fetching latest data:", error);
+    }
+  }
 
-//   function updateEventList(selector, events) {
-//     const list = document.querySelector(selector);
-//     list.innerHTML = "";
-//     events.forEach((event) => {
-//       const listItem = document.createElement("li");
-//       listItem.className = "list-group-item";
-//       listItem.textContent = event;
-//       list.appendChild(listItem);
-//     });
-//   }
+  function updateEventList(selector, events) {
+    const list = document.querySelector(selector);
+    list.innerHTML = "";
+    events.forEach((event) => {
+      const listItem = document.createElement("li");
+      listItem.className = "list-group-item";
+      listItem.textContent = event;
+      list.appendChild(listItem);
+    });
+  }
 
-//   function updateMessageList(selector, messages) {
-//     const list = document.querySelector(selector);
-//     list.innerHTML = "";
-//     messages.forEach((message) => {
-//       const listItem = document.createElement("li");
-//       listItem.className = "list-group-item";
-//       const messageDiv = document.createElement("div");
-//       messageDiv.className = "message";
-//       const img = document.createElement("img");
-//       img.src = message.profile_url;
-//       img.alt = "Profile Picture";
-//       const contentDiv = document.createElement("div");
-//       contentDiv.className = "content";
-//       const name = document.createElement("h3");
-//       name.textContent = message.name;
-//       const content = document.createElement("p");
-//       content.textContent = message.content;
-//       contentDiv.appendChild(name);
-//       contentDiv.appendChild(content);
-//       messageDiv.appendChild(img);
-//       messageDiv.appendChild(contentDiv);
-//       listItem.appendChild(messageDiv);
-//       list.appendChild(listItem);
-//     });
-//   }
+  function updateMessageList(selector, messages) {
+    const list = document.querySelector(selector);
+    list.innerHTML = "";
+    messages.forEach((message) => {
+      const listItem = document.createElement("li");
+      listItem.className = "list-group-item";
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message";
+      const img = document.createElement("img");
+      img.src = message.profile_url;
+      img.alt = "Profile Picture";
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "content";
+      const name = document.createElement("h3");
+      name.textContent = message.name;
+      const content = document.createElement("p");
+      content.textContent = message.content;
+      contentDiv.appendChild(name);
+      contentDiv.appendChild(content);
+      messageDiv.appendChild(img);
+      messageDiv.appendChild(contentDiv);
+      listItem.appendChild(messageDiv);
+      list.appendChild(listItem);
+    });
+  }
 
-//   // Fetch data every 5 seconds
-//   setInterval(fetchLatestData, 5000);
+  // Fetch data every 5 seconds
+  setInterval(fetchLatestData, 5000);
 
-//   // Initial fetch
-//   fetchLatestData();
-//   setInterval(fetchLatestData, 5000);
-// });
+  // Initial fetch
+  fetchLatestData();
+});

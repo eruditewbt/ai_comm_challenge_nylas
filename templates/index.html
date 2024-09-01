@@ -1,9 +1,8 @@
 {% extends "base.html" %} {% block content %}
 
 <div class="main-content" id="home" style="display: none">
-  <header class="index">
-    <h1 class="display-4">Welcome to the Smart Scheduling Assistant</h1>
-
+  <section class="index">
+    <h1>Welcome to the Smart Scheduling Assistant</h1>
     <p class="lead">
       The Smart Scheduling Assistant is a powerful tool that helps you manage
       your schedule efficiently. It uses advanced algorithms to analyze your
@@ -12,10 +11,9 @@
     <a href="/set-session">
       <button class="button">Sign In</button>
     </a>
-  </header>
+  </section>
   <section>
-    <h2 class="display-5">How it Works</h2>
-
+    <h2>How it Works</h2>
     <p>
       The Smart Scheduling Assistant works by integrating with your calendar and
       analyzing your existing appointments and events. It takes into account
@@ -24,8 +22,7 @@
     </p>
   </section>
   <section>
-    <h2 class="display-5">Integration</h2>
-
+    <h2>Integration</h2>
     <p>
       The Smart Scheduling Assistant seamlessly integrates with popular calendar
       platforms such as Google Calendar, Microsoft Outlook, and Apple Calendar.
@@ -35,8 +32,7 @@
   </section>
   <section class="fb">
     <div>
-      <h2 class="display-5">Features</h2>
-
+      <h2>Features</h2>
       <ul class="list-group">
         <li class="list-group-item">Smart meeting time suggestions</li>
         <li class="list-group-item">
@@ -47,9 +43,10 @@
         <li class="list-group-item">Real-time availability updates</li>
       </ul>
     </div>
+  </section>
+  <section>
     <div>
-      <h2 class="display-5">Benefits</h2>
-
+      <h2>Benefits</h2>
       <ul class="list-group">
         <li class="list-group-item">Save time scheduling meetings</li>
         <li class="list-group-item">Reduce scheduling conflicts</li>
@@ -60,8 +57,7 @@
     </div>
   </section>
   <section>
-    <h2 class="display-5">Get Started</h2>
-
+    <h2>Get Started</h2>
     <p>
       To start using the Smart Scheduling Assistant, simply sign up for an
       account and connect your calendar. You'll be able to schedule meetings
@@ -72,8 +68,9 @@
     </a>
   </section>
 </div>
+
 <div class="main-content" id="manage-event" style="display: none">
-  <h2 class="display-5">Manage Events with AI</h2>
+  <h2>Manage Events with AI</h2>
   <section>
     <p>
       Our project utilizes the power of Artificial Intelligence (AI) to help you
@@ -103,6 +100,7 @@
     </a>
   </section>
 </div>
+
 <div class="main-content" id="messages" style="display: none">
   <section>
     <h2 class="display-5">Manage Emails</h2>
@@ -113,7 +111,7 @@
     </p>
   </section>
   <section>
-    <h2 class="display-5">Receiving Emails</h2>
+    <h2>Receiving Emails</h2>
     <p>
       The project integrates with popular email providers such as Gmail,
       Outlook, and Yahoo Mail. It automatically fetches your incoming emails and
@@ -121,7 +119,7 @@
     </p>
   </section>
   <section>
-    <h2 class="display-5">Replying to Emails</h2>
+    <h2>Replying to Emails</h2>
     <p>
       Our system provides a user-friendly interface for composing and sending
       emails. You can easily draft, format, and send replies directly from the
@@ -132,6 +130,7 @@
     </a>
   </section>
 </div>
+
 <div class="main-content" id="settings" style="display: none">
   <section>
     <h2 class="display-5">Manage User Data</h2>
@@ -142,7 +141,7 @@
     </p>
   </section>
   <section>
-    <h2 class="display-5">Update Profile Image</h2>
+    <h2>Update Profile Image</h2>
     <p>
       With our intuitive interface, updating your profile image is a breeze.
       Simply navigate to the settings page, choose the image you want to upload,
@@ -151,7 +150,7 @@
     </p>
   </section>
   <section>
-    <h2 class="display-5">Change Username</h2>
+    <h2>Change Username</h2>
     <p>
       Need to change your username? No problem. In the settings section, you can
       easily modify your username to reflect your preferences. Just enter your
@@ -160,7 +159,7 @@
     </p>
   </section>
   <section>
-    <h2 class="display-5">Add More Accounts</h2>
+    <h2>Add More Accounts</h2>
     <p>
       To expand your project capabilities, you can add more accounts to your
       profile. Whether it's integrating with additional calendar platforms or
@@ -172,4 +171,5 @@
     </a>
   </section>
 </div>
+
 {% endblock %}

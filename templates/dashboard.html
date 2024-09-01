@@ -1,12 +1,14 @@
 {% extends "base.html" %} {% block content %}
-<main class="main-content" id="home" style="display: none;"></main>
+<div class="main-content" id="home" style="display: none">
   <div class="event">
-    <header>
-      <div class="profile">
-        <img src="{{ profile_url }}" alt="Profile Picture" />
-        <span>{{ username }}</span>
-      </div>
-    </header>
+    <div class="profile">
+      <img
+        class="profile-image"
+        src="{{ profile_url }}"
+        alt="Profile Picture"
+      />
+      <span>{{ username }}</span>
+    </div>
     <section class="home">
       <h2>User Dashboard</h2>
       <div class="stat">
@@ -35,7 +37,7 @@
         </div>
         <div id="current" class="tabcontent">
           <p>current events: {{ current_events.length }}</p>
-          <ul class="list-group"></ul>
+          <ul class="list-group">
             {% for event in current_events %}
             <li class="list-group-item">{{ event }}</li>
             {% endfor %}
@@ -43,7 +45,7 @@
         </div>
         <div id="upcoming" class="tabcontent">
           <p>upcoming events: {{ upcoming_events.length }}</p>
-          <ul class="list-group"></ul>
+          <ul class="list-group">
             {% for event in upcoming_events %}
             <li class="list-group-item">{{ event }}</li>
             {% endfor %}
@@ -51,7 +53,7 @@
         </div>
         <div id="completed" class="tabcontent">
           <p>completed events: {{ completed_events.length }}</p>
-          <ul class="list-group"></ul>
+          <ul class="list-group">
             {% for event in completed_events %}
             <li class="list-group-item">{{ event }}</li>
             {% endfor %}
@@ -75,32 +77,63 @@
       </div>
     </aside>
   </div>
-</main>
-<main class="main-content" id="manage-event" style="display: none;">
-  <div class="manage-event"></div>
-    <header>
-      <div class="create">
-        <img src="{{ profile_url }}" alt="Profile Picture" />
-        <span>{{ username }}</span>
-      </div>
-    </header>
+</div>
+<div class="main-content" id="manage-event" style="display: none">
+  <div class="manage-event">
+    <div class="profile">
+      <img
+        class="profile-image"
+        src="{{ profile_url }}"
+        alt="Profile Picture"
+      />
+      <span>{{ username }}</span>
+    </div>
     <section>
       <div>
-        <form id="event-form" >
+        <form id="event-form">
           <label for="title">Event Title:</label>
-          <input type="text" name="title" id="title" required class="form-control" />
+          <input
+            type="text"
+            name="title"
+            id="title"
+            required
+            class="form-control"
+          />
 
           <label for="description">Event Description:</label>
-          <textarea name="description" id="description" required class="form-control"></textarea>
+          <textarea
+            name="description"
+            id="description"
+            required
+            class="form-control"
+          ></textarea>
 
           <label for="location">Event Location:</label>
-          <input type="text" name="location" id="location" required class="form-control" />
+          <input
+            type="text"
+            name="location"
+            id="location"
+            required
+            class="form-control"
+          />
 
           <label for="start_time">Start Time:</label>
-          <input type="datetime-local" name="start" id="start_time" required class="form-control" />
+          <input
+            type="datetime-local"
+            name="start"
+            id="start_time"
+            required
+            class="form-control"
+          />
 
           <label for="end_time">End Time:</label>
-          <input type="datetime-local" name="end" id="end_time" required class="form-control" />
+          <input
+            type="datetime-local"
+            name="end"
+            id="end_time"
+            required
+            class="form-control"
+          />
 
           <button type="submit" class="btn btn-primary">Create Event</button>
         </form>
@@ -113,55 +146,64 @@
         <h2>Create Event with AI</h2>
         <label for="ai_event_text">Event Details:</label>
         <textarea id="ai_event_text" required class="form-control"></textarea>
-        <button id="ai_create_event_btn" class="btn btn-primary">Create Event with AI</button>
+        <button id="ai_create_event_btn" class="btn btn-primary">
+          Create Event with AI
+        </button>
       </div>
       <p class="ai-result"></p>
     </section>
-
   </div>
-</main>
-<main class="main-content" id="messages" style="display: none;">
+</div>
+<div class="main-content" id="messages" style="display: none">
   <div class="messages">
-    <header>
-      <div class="profile">
-        <img src="{{ profile_url }}" alt="Profile Picture" />
-        <span>{{ username }}</span>
-      </div>
-    </header>
+    <div class="profile">
+      <img
+        class="profile-image"
+        src="{{ profile_url }}"
+        alt="Profile Picture"
+      />
+      <span>{{ username }}</span>
+    </div>
     <section class="notifications">
       <h2>Notifications</h2>
-      <ul id="notification-list" class="list-group"></ul>
+      <ul id="notification-list" class="list-group">
         <!-- Notifications will be dynamically inserted here -->
       </ul>
     </section>
     <section>
-      <h2>Messages</h2>
-      <ul class="list-group">
-        <li class="list-group-item"></li>
-          <div class="message">
-            <img src="{{ profile_url }}" alt="Profile Picture" />
+      <div>
+        <h2>Messages</h2>
+      </div>
+      <div class="message">
+        <div class="content">
+          <div class="list-group">
             {% for message in messages %}
-            <div class="content">
-              <h3>{{ message.name }}</h3>
-              <p>{{ message.content }}</p>
+            <div class="list-group-item">
+              <div>{{ message.name }}</div>
+              <div>{{ message.content }}</div>
             </div>
             {% endfor %}
+            <!-- Repeat for each message -->
           </div>
-        </li>
-        <!-- Repeat for each message -->
-      </ul>
+        </div>
+      </div>
     </section>
   </div>
-</main>
-<main class="main-content" id="settings" style="display: none;">
+</div>
+<div class="main-content" id="settings" style="display: none">
   <section>
     <h2>Settings</h2>
     <div class="account">
       <h3>Account Settings</h3>
-      <form action="/upload" method="POST" enctype="multipart/form-data">
+      <form action="/upload/form" method="POST" enctype="multipart/form-data">
         <label for="profile-image">Upload Profile Image:</label>
+        <input 
+          type="name"
+          value="{{ username }}"
+          style="opacity: 0;"
+        />
         <input
-          type="image"
+          type="file"
           name="profile-image"
           id="profile-image"
           accept="image/*"
@@ -170,8 +212,14 @@
         />
         <button type="submit" class="btn btn-primary">Upload</button>
       </form>
-      <img src="{{ profile_image }}" alt="Profile Image" />
-      <p>{{ username }}</p>
+      <div class="profile">
+        <img
+          class="profile-image"
+          src="{{ profile_url }}"
+          alt="Profile Picture"
+        />
+        <span>{{ username }}</span>
+      </div>
       <button class="add-account">
         <a href="/nylas/auth" class="add-account">Add Account</a>
       </button>
@@ -181,5 +229,5 @@
     </div>
     <!-- Add other settings options here -->
   </section>
-</main>
+</div>
 {% endblock %}

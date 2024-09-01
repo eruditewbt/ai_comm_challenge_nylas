@@ -47,44 +47,7 @@ class NylasAPI:
         else:
             return None
 
-# # Usage example
-# api_key = "YOUR_NYLAS_API_KEY"
-# nylas_api = NylasAPI(api_key)
 
-# # Add event
-# event_data = {
-#     "title": "Meeting",
-#     "start_time": "2022-01-01T10:00:00Z",
-#     "end_time": "2022-01-01T11:00:00Z",
-#     "participants": ["user1@example.com", "user2@example.com"]
-# }
-# event_id = nylas_api.add_event(event_data)
-# print(event_id)
-
-# # Add email
-# email_data = {
-#     "to": "recipient@example.com",
-#     "subject": "Hello",
-#     "body": "This is a test email"
-# }
-# email_id = nylas_api.add_email(email_data)
-# print(email_id)
-
-# # Add calendar
-# calendar_data = {
-#     "name": "Work Calendar",
-#     "description": "Calendar for work events"
-# }
-# calendar_id = nylas_api.add_calendar(calendar_data)
-# print(calendar_id)
-# # Add user data using Nylas API V3
-# user_data = {
-#     "name": "John Doe",
-#     "email": "john.doe@example.com",
-#     "calendar_id": calendar_id
-# }
-# user_id = nylas_api.add_user(user_data)
-# print(user_id)
 async def update_user(user):
     try:
         # Get the user's address 

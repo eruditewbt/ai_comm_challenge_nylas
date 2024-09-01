@@ -16,10 +16,10 @@
 
     <!-- External CSS (Bootstrap, Font Awesome, etc.) -->
     <!-- Bootstrap CSS -->
-    <link
+    <!-- <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
       rel="stylesheet"
-    />
+    /> -->
     <!-- Google Fonts: Roboto -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
@@ -69,7 +69,7 @@
       <nav class="sidebar">
         <ul>
           <li>
-            <span><i class="fas fa-toggle-on"></i></span>
+            <span id="theme-toggle"><i class="fas fa-toggle-on"></i></span>
             <a href=""></a>
           </li>
           <li>
@@ -91,8 +91,8 @@
         </ul>
         <p></p>
       </nav>
-      {% block content %} {% endblock %}
     </div>
+    <div>{% block content %} {% endblock %}</div>
     <footer class="footer">
       <p>&copy; 2024 Smart Scheduling Assistant. All rights reserved.</p>
     </footer>

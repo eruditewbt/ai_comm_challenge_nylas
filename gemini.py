@@ -126,10 +126,11 @@ async def create_event_with_genai(user_text: str):
         response = model.generate_content(prompt)
 
         # Parse the response to extract event details
-        event_details = response  # Assuming the response contains the event details in a structured format
+        event_details = response.text  # Assuming the response contains the event details in a structured format
 
         # Example of parsing the response (this will depend on the actual response format)
         if 'title' in event_details and 'location' in event_details and 'start_time' in event_details and 'end_time' in event_details:
+            print( "event generated successfully: ", event_details)
             return json.dumps({
                 "status": "success",
                 "body": event_details

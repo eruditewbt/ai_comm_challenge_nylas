@@ -1,12 +1,19 @@
 :root {
-  --primary-color: #333;
-  --secondary-color: #fff;
-  --background-color: #bcbaba;
+  --primary-color: #2979ae; 
+  --secondary-color: #ecf0f1; 
+  --background-color: #f5f5f5; 
   --sidebar-width: 110px;
   --sidebar-height: 60px;
   --padding: 20px;
   --font-family: "Roboto", sans-serif;
-  --accent-color: #f39c12;
+  --accent-color: #be3f31; 
+}
+
+body.dark-mode {
+  --primary-color: #3498db; 
+  --secondary-color: #2c3e50; 
+  --background-color: #2c3e50; 
+  --accent-color: #e74c3c; 
 }
 
 html {
@@ -16,11 +23,18 @@ html {
 
 body {
   font-family: var(--font-family);
-  margin: 0;
-  padding: 0;
   background-color: var(--background-color);
   display: flex;
   flex-direction: column;
+  width: 100%;
+  font-size: 80%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  width: 100%;
 }
 
 .hidden {
@@ -36,6 +50,7 @@ body {
 ======================*/
 
 header {
+  margin-top: var(--padding);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -62,52 +77,6 @@ p,
   font-family: var(--font-family);
 }
 
-.display-4,
-.display-5 {
-  font-weight: 700;
-}
-
-.display-4 {
-  font-size: 2.5rem;
-}
-
-.display-5 {
-  font-size: 2rem;
-}
-
-.lead {
-  font-size: 1.25rem;
-}
-
-p,
-.list-group-item {
-  font-size: 1rem;
-}
-
-h2,
-h3,
-.tablinks,
-.quote p,
-.day,
-.form-control,
-.btn {
-  font-size: 16px;
-}
-
-h2 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-h3 {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.quote p {
-  font-style: italic;
-}
-
 .error h1 {
   font-size: 36px;
   font-weight: bold;
@@ -128,36 +97,52 @@ h3 {
 }
 
 .main-content {
-  flex: 1;
   padding: var(--padding);
-  margin-left: 20%;
+  margin-right: 0;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  width: auto;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin-left: 20%;
 }
 
-section {
+header {
+  margin-top: var(--padding);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 90%;
-  padding-bottom: 10%;
-  margin-bottom: 10%;
+  text-align: center;
+}
+
+section {
+  margin-top: var(--padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  overflow: auto;
+  padding: var(--padding);
+  box-sizing: border-box;
   border-bottom: 1px solid var(--primary-color);
+  box-shadow: var(--primary-color);
+  border-radius: 10px;
 }
 
 section h2,
 section p {
   color: var(--primary-color);
   margin: 0;
-}
-
-section img {
-  width: 100%;
-  max-width: 500px;
-  margin: 20px 0;
 }
 
 /*======================
@@ -185,6 +170,8 @@ section img {
   flex-direction: column;
   height: 100%;
   justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .sidebar ul li {
@@ -227,42 +214,14 @@ section img {
   transition: transform 0.3s;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-
-  .sidebar ul {
-    flex-direction: row;
-    height: auto;
-    justify-content: space-evenly;
-    align-items: center;
-  }
-
-  .sidebar ul li {
-    flex-grow: 0;
-  }
-
-  .sidebar ul li a {
-    justify-content: flex-start;
-    padding: var(--padding);
-  }
-}
-
-.container {
-  display: flex;
-  width: 100%;
-  flex: 1;
-}
-
 /*======================
   Button Styles
 ======================*/
 
-.button {
+/* Buttons */
+
+.button,
+.btn-primary {
   background-color: var(--primary-color);
   color: var(--secondary-color);
   padding: 10px 20px;
@@ -276,7 +235,8 @@ section img {
   margin: 20px;
 }
 
-.button:hover {
+.button:hover,
+.btn-primary:hover {
   background-color: var(--secondary-color);
   color: var(--primary-color);
 }
@@ -320,124 +280,6 @@ section img {
 }
 
 /*======================
-  Dashboard Styles
-======================*/
-
-.profile {
-  display: flex;
-  align-items: center;
-}
-
-.profile img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-input[type="text"] {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.dashboard,
-.calendar {
-  background-color: #fff;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.stats,
-.tasks {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.stat,
-.tasks {
-  flex: 1;
-  margin-right: 20px;
-}
-
-.stat:last-child,
-.tasks:last-child {
-  margin-right: 0;
-}
-
-.quote {
-  font-style: italic;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.days {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.day {
-  width: 14.28%;
-  text-align: center;
-  padding: 10px 0;
-  border: 1px solid #ddd;
-  box-sizing: border-box;
-}
-
-/*======================
-  Tab Styles
-======================*/
-
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-
-.tab button {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-}
-
-.tab button:hover {
-  background-color: #ddd;
-}
-
-.tab button.active {
-  background-color: #ccc;
-}
-
-.tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-
-.notifications {
-  margin-top: 20px;
-}
-
-.notifications ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.notifications li {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-/*======================
   Footer Styles
 ======================*/
 
@@ -446,7 +288,8 @@ input[type="text"] {
   color: var(--secondary-color);
   text-align: center;
   padding: var(--padding);
-  width: 100%;
+  min-width: 100%;
+  margin: 0;
 }
 
 /*======================
@@ -454,11 +297,25 @@ input[type="text"] {
 ======================*/
 
 @media (max-width: 768px) {
-  .main-content {
+  body {
+    font-size: 60%;
     margin: 0;
+  }
+  .main-content {
+    margin-left: 0;
+    margin-right: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  section {
+    width: 100%;
+    margin: 0;
+    padding: var(--padding);
   }
 
   .container {
+    margin: 0;
     flex-direction: column;
   }
 
@@ -474,6 +331,9 @@ input[type="text"] {
 
   .sidebar ul {
     flex-direction: row;
+    height: auto;
+    justify-content: space-evenly;
+    align-items: center;
   }
 
   .sidebar ul li {
@@ -486,6 +346,7 @@ input[type="text"] {
 
   .footer {
     margin-bottom: var(--sidebar-height);
+    padding: var(--padding);
   }
 }
 
@@ -493,40 +354,14 @@ input[type="text"] {
   Dashboard Styles  
 ======================*/
 
-/* General Styles */
-body {
-  font-family: "Arial", sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
-
-.main-content {
-  display: none;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h2,
-h3 {
-  color: #444;
-}
-
-p {
-  margin: 10px 0;
-}
-
 /* Profile Section */
 .profile {
   display: flex;
   align-items: center;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
   border-radius: 8px;
+  margin-bottom: var(--padding);
 }
 
 .profile img {
@@ -534,30 +369,58 @@ p {
   height: 50px;
   border-radius: 50%;
   margin-right: 15px;
-  border: 2px solid #fff;
+  border: 2px solid var(--secondary-color);
 }
 
 /* Dashboard Statistics */
+
+.stats,
+.tasks {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.stat,
+.tasks {
+  flex: 1;
+  margin-right: 20px;
+}
+
 .stat {
   margin-top: 20px;
+}
+
+.stat:last-child,
+.tasks:last-child {
+  margin-right: 0;
 }
 
 .tab {
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid var(--background-color);
+  border-top: none;
 }
 
 .tab button {
+  background-color: inherit;
   flex: 1;
   padding: 10px;
-  background-color: #f4f4f9;
   border: none;
   border-radius: 8px;
   font-size: 14px;
-  color: #007bff;
+  color: var(--secondary-color);
   transition: background-color 0.3s ease, color 0.3s ease;
   cursor: pointer;
+  outline: none;
 }
 
 .tab button.active,
@@ -578,7 +441,30 @@ p {
   display: block;
 }
 
+/* notification styles */
+
+.notifications {
+  margin-top: 20px;
+}
+
+.notifications ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.notifications li {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
 /* Event List */
+.event {
+  display: flex;
+  flex-direction: column;
+}
+
 .list-group {
   padding: 0;
   list-style: none;
@@ -586,7 +472,7 @@ p {
 
 .list-group-item {
   padding: 10px;
-  background-color: #fff;
+  background-color: var(--secondary-color);
   margin-bottom: 5px;
   border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
@@ -594,22 +480,28 @@ p {
 }
 
 .list-group-item:hover {
-  background-color: #f4f4f9;
+  background-color: var(--primary-color);
 }
 
 /* Quote Section */
 .quote {
   margin-top: 20px;
   padding: 10px;
-  background-color: #e9ecef;
-  border-left: 5px solid #007bff;
+  background-color: var(--secondary-color);
+  border-left: 5px solid var(--primary-color);
   border-radius: 8px;
   font-style: italic;
+  text-align: center;
 }
 
 /* Calendar Section */
+
+.dashboard,
 .calendar {
+  background-color: var(--secondary-color);
+  padding: 20px;
   margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .calendar h3 {
@@ -626,7 +518,7 @@ p {
 .day {
   flex: 1;
   padding: 15px;
-  background-color: #fff;
+  background-color: var(--secondary-color);
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
@@ -635,35 +527,24 @@ p {
 }
 
 .day:hover {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
   transform: scale(1.05);
 }
 
-/* Buttons */
-.button,
-.btn-primary {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.button:hover,
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
 /* Form Controls */
+
+input[type="text"] {
+  padding: 5px 10px;
+  border: 1px solid var(--background-color);
+  border-radius: 4px;
+}
+
 .form-control {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--background-color);
   border-radius: 8px;
 }
 
@@ -681,7 +562,7 @@ textarea.form-control {
   align-items: center;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: #f4f4f9;
+  background-color: var(--secondary-color);
   border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
@@ -700,21 +581,21 @@ textarea.form-control {
 .message .content h3 {
   margin: 0;
   font-size: 16px;
-  color: #007bff;
+  color: var(--primary-color);
 }
 
 .message .content p {
   margin: 5px 0 0;
-  color: #666;
+  color: var(--background-color);
 }
 
 /* Settings Section */
 .settings h2 {
-  color: #007bff;
+  color: var(--primary-color);
 }
 
 .settings .account {
-  background-color: #f4f4f9;
+  background-color: var(--secondary-color);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -725,13 +606,13 @@ textarea.form-control {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 2px solid #007bff;
+  border: 2px solid var(--primary-color);
   margin-bottom: 15px;
 }
 
 .settings .account button {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
   padding: 10px;
   border: none;
   border-radius: 8px;
@@ -740,10 +621,10 @@ textarea.form-control {
 }
 
 .settings .account button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color);
 }
 
 .settings .account button a {
-  color: #fff;
+  color: var(--secondary-color);
   text-decoration: none;
 }

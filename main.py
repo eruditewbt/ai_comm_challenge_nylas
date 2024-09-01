@@ -117,16 +117,16 @@ async def set_session_id(request: Request, response: Response):
 
 # Route to authenticate with Nylas
 @app.get("/nylas/auth")
-async def login(request: Request, response: Response):
+async def login(request: Request):
     session_id = request.cookies.get("session_id")
     print(f"Initial session_id: {session_id}")
 
     session_data = await get_session(session_id)
     print(f"Session data: {session_data}")
     if session_id:
-        username = session_data["username"]
+        if "username" in session_data :
+            username = session_data["username"]
 
-        if username:
             return RedirectResponse(url=f"/dashboard/{username}")
 
     if "grant_id" not in session_data:
@@ -144,72 +144,77 @@ async def login(request: Request, response: Response):
 # Route to exchange the code for an access token
 @app.get("/oauth/exchange")
 async def authorized(request: Request, response: Response):
-    session_id = request.cookies.get("session_id") 
-    if not session_id:
-        session_id = "session_id"
-    print(f"Session ID in /oauth/exchange: {session_id}")
-
-    session_data = await get_session(session_id)
-    print(f"Session data in /oauth/exchange: {session_data}")
-
-    if "grant_id" in session_data:
-        username = session_data["username"]
-        return RedirectResponse(url=f"/dashboard/{username}")
-    code = request.query_params.get("code")
-
-    if not code:
-        raise HTTPException(status_code=400, detail="Authorization could not be completed")
-    
-    exchange_request = CodeExchangeRequest({
-        "redirect_uri": os.environ.get("REDIRECT_URI"),
-        "code": code,
-        "client_id": os.environ.get("NYLAS_CLIENT_ID"),
-        "client_secret": os.environ.get("NYLAS_API_KEY"),
-        "code_verifier": None
-    })
-
     try:
-        exchange = exchange_code(exchange_request)
-        
-        email = exchange.email
-        num = random.randint(10000000, 99999999)
-        username_from_email = email.split("@")[0]
-        
-        grant_id = exchange.grant_id
-
-        result = await get_username(grant_id)
-        print(result)
-        if result:
-            username = result
-        else:
-            username= username_from_email + str(num)
-            
-        print(username)
-        session_data["email"] = email
-        session_data["grant_id"] = grant_id
-        session_data["username"] = username
-
+        session_id = request.cookies.get("session_id") 
         if not session_id:
-            session_id = str(uuid.uuid4())
-            response.set_cookie(
-                key="session_id",
-                value=session_id,
-                httponly=True,  # Prevent JavaScript access to the cookie
-                secure=False,    # Ensure the cookie is sent over HTTPS
-                samesite="lax",  # Prevent CSRF attacks
-                max_age=86400  #1 day
-                
-            )
-            print(f"New session_id set: {session_id}")
+            session_id = "session_id"
+        print(f"Session ID in /oauth/exchange: {session_id}")
 
-        result = await set_session(session_id, session_data)
-        print(result)
-        session=result["session_data"]
-        if session["status"] == "error":
-            raise HTTPException(status_code=500, detail="Authorization failed")
-    except NylasOAuthError as e:
-        print(f"NylasOAuthError: {e}")
-        raise HTTPException(status_code=400, detail="Authorization failed")
+        session_data = await get_session(session_id)
+        print(f"Session data in /oauth/exchange: {session_data}")
+
+        if "grant_id" in session_data:
+            username = session_data["username"]
+            return RedirectResponse(url=f"/dashboard/{username}")
+        code = request.query_params.get("code")
+
+        if not code:
+            raise HTTPException(status_code=400, detail="Authorization could not be completed")
+        
+        exchange_request = CodeExchangeRequest({
+            "redirect_uri": os.environ.get("REDIRECT_URI"),
+            "code": code,
+            "client_id": os.environ.get("NYLAS_CLIENT_ID"),
+            "client_secret": os.environ.get("NYLAS_API_KEY"),
+            "code_verifier": None
+        })
+
+        try:
+            exchange = exchange_code(exchange_request)
+            
+            email = exchange.email
+            num = random.randint(10000000, 99999999)
+            username_from_email = email.split("@")[0]
+            
+            grant_id = exchange.grant_id
+
+            result = await get_username(grant_id)
+            print(result)
+            if result:
+                username = result
+            else:
+                username= username_from_email + str(num)
+                
+            print(username)
+            session_data["email"] = email
+            session_data["grant_id"] = grant_id
+            session_data["username"] = username
+            session_data["calender"] = email
+
+            if not session_id:
+                session_id = str(uuid.uuid4())
+                response.set_cookie(
+                    key="session_id",
+                    value=session_id,
+                    httponly=True,  # Prevent JavaScript access to the cookie
+                    secure=False,    # Ensure the cookie is sent over HTTPS
+                    samesite="lax",  # Prevent CSRF attacks
+                    max_age=86400  #1 day
+                    
+                )
+                print(f"New session_id set: {session_id}")
+
+            result = await set_session(session_id, session_data)
+            print(result)
+            session=result["session_data"]
+            if session["status"] == "error":
+                raise HTTPException(status_code=500, detail="Authorization failed")
+        except NylasOAuthError as e:
+            print(f"NylasOAuthError: {e}")
+            raise HTTPException(status_code=400, detail="Authorization failed")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
 
     return RedirectResponse(url=f"/dashboard/{username}")
 
@@ -227,8 +232,11 @@ async def dashboard(username: str, request: Request, response: Response):
         session_data = await get_session(session_id)
         print("Login session data: ", session_data)
 
+        
+
         a = "grant_id" not in session_data 
         b= "username" in session_data
+        print("a = ",a, "b = ", b)
         if b:
             b = username != session_data["username"]
 
@@ -256,16 +264,22 @@ async def dashboard(username: str, request: Request, response: Response):
 
         if not session_id:
             return {"error": "Session ID not found in cookies"}
-        
+        email = session_data["email"]
+        session_data["calendar"] = email
         profile_url="/favicon.ico"
         if "profile_url" in session_data:
             profile_url = session_data["profile_url"]
 
         date = datetime.now().strftime("%B %Y")
-        event_raw = await primary_calendar(session_data, session_id)
+        # session_data = await primary_calendar(session_data, session_id)
+        print(f"result of setting calendar id is: {session_data}")
+        if "calendar" not in session_data:
+            raise HTTPException(status_code=500, detail="Event Data could not be accessed")
 
+        event_raw = list_events(session_data, session_id)
+        print("event raw is  ", event_raw)
         event = await sort_events(event_raw)
-        print(event)
+        print("event sort is  ", event)
         current_events = event['current']
         upcoming_events = event['upcoming']
         completed_events = event['completed']
@@ -273,11 +287,12 @@ async def dashboard(username: str, request: Request, response: Response):
         all_events = current_events + upcoming_events + completed_events
         summary= await summarize_text(all_events)
 
-        messages = await recent_emails(session_data, session_id)
+        messages = recent_emails(session_data, session_id)
         email = session_data["email"]
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return RedirectResponse(url="/error?message=An error occurred&code=500")
+        
     
     return templates.TemplateResponse("dashboard.html", {"request": request, "email": email, "username": username, "events": all_events, "current_events": current_events, "upcoming_events": upcoming_events, "completed_events": completed_events, "summary": summary, "profile_url": profile_url, "date": date, "messages": messages})   
 
@@ -309,7 +324,7 @@ async def create_event_route(request: Request, response: Response, data: dict):
             post_event = data["text"]
             event_data = await create_event_with_genai(post_event)
             if event_data["status"] == "error":
-                return JSONResponse(content=event_data)
+                return JSONResponse(str(event_data))
             event_body = event_data["body"]
         else:
             # Handle form submission
@@ -321,12 +336,12 @@ async def create_event_route(request: Request, response: Response, data: dict):
                 "end_time": data["end_time"]
             }
 
-        result = await create_event(session_data, session_id, event_body)
+        result = create_event(session_data, session_id, event_body)
         print(result)
-        return JSONResponse(content=result)
+        return JSONResponse(result)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JSONResponse(content={"status": "error", "message": str(e)})
+        return JSONResponse(content=str({"status": "error", "message": str(e)}))
 
 # Route to log out
 @app.get("/logout")
@@ -339,10 +354,8 @@ async def logout(request: Request, response: Response):
     return RedirectResponse(url="/")
 
 
-
-# Route to upload a file
-@app.post("/upload/")
-async def upload_file(request: Request, file: UploadFile = File(...)):
+@app.post("/upload/form/")
+async def upload_file_with_form(request: Request, file: UploadFile = File(...), username: str = Form(...)):
     try:
         session_id = request.cookies.get("session_id")
         if not session_id:
@@ -363,27 +376,10 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
         session_result = await set_session(session_id, session_data)
         results = await update_user(session_data)
         print(results, session_result)
-        return {"filename": file.filename, "path": file_path}
+        return {"filename": file.filename, "username": username, "path": file_path}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        raise HTTPException(status_code=405, detail="File Upload failed")
 
-# Route to upload a file with form data
-@app.post("/upload/form/")
-async def upload_file_with_form(request: Request, file: UploadFile = File(...), username: str = Form(...)):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        return RedirectResponse(url="/nylas/auth")
-
-    # Create a directory for the user if it doesn't exist
-    user_dir = os.path.join(UPLOAD_DIR, session_id)
-    os.makedirs(user_dir, exist_ok=True)
-
-    # Save the uploaded file
-    file_path = os.path.join(user_dir, file.filename)
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
-
-    return {"filename": file.filename, "username": username, "path": file_path}
 
 # custom error handlers for 404 Not Found
 @app.exception_handler(404)
@@ -416,7 +412,7 @@ async def display_error(request: Request, message: str, code: int):
 async def get_latest_data( request: Request):
     session_id = request.cookies.get("session_id")
     if not session_id:
-        return JSONResponse(content={"error": "Session ID not found in cookies"})
+        raise HTTPException(status_code=400, detail="Session ID not found in cookies")
     # Fetch the latest data
     session_data = await get_session(session_id)
     date = datetime.now().strftime("%B %Y")
@@ -427,7 +423,7 @@ async def get_latest_data( request: Request):
     username = session_data["username"]
     event_raw = list_events(session_data, session_id)
 
-    event = sort_events(event_raw)
+    event = await sort_events(event_raw)
     print(event)
     current_events = event['current']
     upcoming_events = event['upcoming']
