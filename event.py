@@ -146,19 +146,18 @@ def list_events(session_data: dict, session_id: str):
 # Route to create an event
 # @app.get("/nylas/create-event")
 def create_event(session_data: dict, session_id: str, event: dict):
-        
     try:
         calendar_id = session_data["calendar"]
         grant_id = session_data["grant_id"]
         if not calendar_id:
-            session_data=primary_calendar(session_data, session_id)
+            session_data = primary_calendar(session_data, session_id)
             print(session_data)
             calendar_id = session_data["calendar"]
             grant_id = session_data["grant_id"]
 
         # Convert provided start_time and end_time to Unix timestamps
-        start_time_obj = datetime.strptime(event["start_time"], "%Y-%m-%dT%H:%M")
-        end_time_obj = datetime.strptime(event["end_time"], "%Y-%m-%dT%H:%M")
+        start_time_obj = datetime.strptime(event["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        end_time_obj = datetime.strptime(event["end_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
 
         start_timestamp = int(time.mktime(start_time_obj.timetuple()))
         end_timestamp = int(time.mktime(end_time_obj.timetuple()))
@@ -175,12 +174,15 @@ def create_event(session_data: dict, session_id: str, event: dict):
             "description": event["description"],
         }
 
-    
-        event = nylas.events.create(grant_id, query_params=query_params, request_body=request_body)
-        if 'title' in event and 'location' in event and 'start_time' in event and 'end_time' in event:
+        print(f"Request Body: {request_body}")
+
+        event_response = nylas.events.create(grant_id, query_params=query_params, request_body=request_body)
+        print(f"Event Response: {event_response}")
+
+        if 'title' in event_response and 'location' in event_response and 'when' in event_response:
             return json.dumps({
                 "status": "success",
-                "body": str(event)
+                "body": str(event_response)
             })
         else:
             raise ValueError("Event details not found in the response")
@@ -190,8 +192,7 @@ def create_event(session_data: dict, session_id: str, event: dict):
         return json.dumps({
             "status": "error",
             "body": str(e)
-        })
-    
+        })    
 
     
 # Route to get recent emails
@@ -206,7 +207,7 @@ def recent_emails(session_data: dict, session_id: str):
         messages, _, _ = nylas.messages.list(grant_id, query_params)
         # [messages]= messages
         # return event.body
-        return messages 
+        return messages
     except Exception as e:
         return str(e)
 

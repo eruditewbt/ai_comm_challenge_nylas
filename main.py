@@ -309,39 +309,62 @@ class Event(BaseModel):
     end_time: datetime
 
 @app.post("/create-event")
-async def create_event_route(request: Request, response: Response, data: dict):
+async def create_event_endpoint(event: Event, request: Request):
     try:
+        # Extract session data from cookies or headers
         session_id = request.cookies.get("session_id")
         if not session_id:
-            return RedirectResponse(url="/nylas/auth")
+            raise HTTPException(status_code=400, detail="Session ID not found in cookies")
 
+        # get session data from the session_id
         session_data = await get_session(session_id)
         if "grant_id" not in session_data:
             return RedirectResponse(url="/nylas/auth")
 
-        if "text" in data:
-            # Handle AI-generated event
-            post_event = data["text"]
-            event_data = await create_event_with_genai(post_event)
-            if event_data["status"] == "error":
-                return JSONResponse(str(event_data))
-            event_body = event_data["body"]
-        else:
-            # Handle form submission
-            event_body = {
-                "title": data["title"],
-                "location": data["location"],
-                "description": data["description"],
-                "start_time": data["start_time"],
-                "end_time": data["end_time"]
-            }
-
-        result = create_event(session_data, session_id, event_body)
-        print(result)
-        return JSONResponse(result)
+        # Call the create_event function
+        event_data = await create_event_with_genai(event)
+        if event_data["status"] == "error":
+            return JSONResponse(str(event_data))
+        event_body = event_data["body"]
+        response = create_event(session_data, session_id, event_body)
+        return JSONResponse(content=response)
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JSONResponse(content=str({"status": "error", "message": str(e)}))
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+# @app.post("/create-event")
+# async def create_event_route(request: Request, response: Response, data: dict):
+#     try:
+#         session_id = request.cookies.get("session_id")
+#         if not session_id:
+#             return RedirectResponse(url="/nylas/auth")
+
+#         session_data = await get_session(session_id)
+#         if "grant_id" not in session_data:
+#             return RedirectResponse(url="/nylas/auth")
+
+#         if "text" in data:
+#             # Handle AI-generated event
+#             post_event = data["text"]
+#             event_data = await create_event_with_genai(post_event)
+#             if event_data["status"] == "error":
+#                 return JSONResponse(str(event_data))
+#             event_body = event_data["body"]
+#         else:
+#             # Handle form submission
+#             event_body = {
+#                 "title": data["title"],
+#                 "location": data["location"],
+#                 "description": data["description"],
+#                 "start_time": data["start_time"],
+#                 "end_time": data["end_time"]
+#             }
+
+#         result = create_event(session_data, session_id, event_body)
+#         print(result)
+#         return JSONResponse(result)
+#     except Exception as e:
+#         print(f"An error occurred: {str(e)}")
+#         return JSONResponse(content=str({"status": "error", "message": str(e)}))
 
 # Route to log out
 @app.get("/logout")
@@ -372,13 +395,13 @@ async def upload_file_with_form(request: Request, file: UploadFile = File(...), 
         file_path = os.path.join(user_dir, file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
-        session_data["profile_url"] = file_path
+        session_data["profile_url"] = file_path 
         session_result = await set_session(session_id, session_data)
         results = await update_user(session_data)
         print(results, session_result)
-        return {"filename": file.filename, "username": username, "path": file_path}
+        return JSONResponse(content={"status": "success", "filename": file.filename, "username": username})
     except Exception as e:
-        raise HTTPException(status_code=405, detail="File Upload failed")
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
 
 
 # custom error handlers for 404 Not Found
@@ -424,7 +447,7 @@ async def get_latest_data( request: Request):
     event_raw = list_events(session_data, session_id)
 
     event = await sort_events(event_raw)
-    print(event)
+    # print(event)
     current_events = event['current']
     upcoming_events = event['upcoming']
     completed_events = event['completed']

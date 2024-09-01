@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+//create event
 document
   .getElementById("ai_create_event_btn")
   .addEventListener("click", async function () {
@@ -189,8 +190,15 @@ document
         headers: {
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify({ text: eventText }),
-        body: { text: eventText },
+        body: JSON.stringify({
+          title: "AI Generated Event", // Placeholder title
+          location: "AI Generated Location", // Placeholder location
+          description: eventText,
+          start_time: new Date().toISOString(), // Placeholder start time
+          end_time: new Date(
+            new Date().getTime() + 60 * 60 * 1000
+          ).toISOString(), // Placeholder end time (1 hour later)
+        }),
       });
 
       const result = await response.json();
@@ -199,7 +207,7 @@ document
         resultElement.innerHTML = "Event created successfully!";
         // Optionally, you can update the UI with the new event details
       } else {
-        resultElement.innerHTML = "Error creating event: " + result;
+        resultElement.innerHTML = "Error creating event: " + result.body;
       }
     } catch (error) {
       console.error("Error:", error);
@@ -216,10 +224,13 @@ document
     const formData = new FormData(form);
     const formResult = document.querySelector(".form-result");
 
-    const data = {};
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
+    const data = {
+      title: formData.get("title"),
+      description: formData.get("description"),
+      location: formData.get("location"),
+      start_time: new Date(formData.get("start")).toISOString(),
+      end_time: new Date(formData.get("end")).toISOString(),
+    };
 
     try {
       const response = await fetch("/create-event", {
@@ -227,8 +238,7 @@ document
         headers: {
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify(data),
-        body: data,
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -243,7 +253,45 @@ document
       formResult.innerHTML = "An error occurred while creating the event.";
     }
   });
+  
+// form submission upload file
+document.querySelector("form").addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent the default form submission
 
+  const form = event.target;
+  const formData = new FormData(form);
+  const formResult = document.querySelector(".form-result");
+
+  try {
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      formResult.innerHTML = `
+        <div class="alert alert-success">
+          File uploaded successfully!<br>
+          Filename: ${result.filename}<br>
+          Username: ${result.username}<br>
+        </div>`;
+    } else {
+      formResult.innerHTML = `
+        <div class="alert alert-danger">
+          Error uploading file: ${result.message}
+        </div>`;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    formResult.innerHTML = `
+      <div class="alert alert-danger">
+        An error occurred while uploading the file.
+      </div>`;
+  }
+});
+
+//fetch data
 document.addEventListener("DOMContentLoaded", () => {
   async function fetchLatestData() {
     try {

@@ -197,21 +197,23 @@
       <h3>Account Settings</h3>
       <form action="/upload/form" method="POST" enctype="multipart/form-data">
         <label for="profile-image">Upload Profile Image:</label>
-        <input 
-          type="name"
-          value="{{ username }}"
-          style="opacity: 0;"
-        />
         <input
           type="file"
-          name="profile-image"
+          name="file"
           id="profile-image"
           accept="image/*"
           required
           class="form-control"
         />
+        <input
+          type="text"
+          name="username"
+          value="{{ username }}"
+          style="opacity: 0"
+        />
         <button type="submit" class="btn btn-primary">Upload</button>
       </form>
+      <div class="form-result"></div>
       <div class="profile">
         <img
           class="profile-image"
